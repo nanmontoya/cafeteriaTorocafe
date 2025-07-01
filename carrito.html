@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito - ToroCafe</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+       /* Estilos CSS que ya has definido */
+       body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 150px;
+            margin-right: 10px;
+        }
+
+        nav {
+            flex: 1;
+            text-align: center;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-links li {
+            margin-left: 20px;
+        }
+
+        .nav-links li a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #333;
+            background-color: #ffffff;
+            border: 1px solid #4CAF50;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        .nav-links li a:hover {
+            background-color: #4CAF50;
+            color: #ffffff;
+            border-color: #4CAF50;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-item h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .cart-item p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .cart-item button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #f44336;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cart-item button:hover {
+            background-color: #d32f2f;
+        }
+
+        .cart-total {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .cart-total h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .checkout-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Estilos adicionales para el carrito */
+        #cart-items {
+            max-height: 350px;
+            overflow-y: auto;
+            border-bottom: 1.5px solid #e0e0e0;
+            margin-bottom: 18px;
+        }
+
+        .borrar-carrito-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .borrar-carrito-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .acciones-carrito {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="logo.jpg" alt="ToroCafe" class="logo">
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="menu.html">Menú</a></li>
+                <li><a href="promociones.html">Promociones</a></li>
+                <li><a href="carrito.html">Carrito</a></li>
+            </ul>
+        </nav>
+        <img src="Picture1.png" alt="Picture1" class="logo">
+    </header>
+
+    <main>
+        <h1>Carrito de Compras</h1>
+        <section id="cart-items">
+            <!-- Los items del carrito se mostrarán aquí -->
+        </section>
+        <div class="cart-total">
+            <h2>Total: $<span id="cart-total">0.00</span></h2>
+        </div>
+        <div class="acciones-carrito">
+            <button class="checkout-btn borrar-carrito-btn" onclick="borrarCarrito()">Borrar Carrito</button>
+            <a href="pago.html" class="checkout-btn">Realizar Pago</a>
+        </div>
+    </main>
+
+    <footer>
+        <img src="piepagina.jpeg" width="1300" height="100"/>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalElement = document.getElementById('cart-total');
+
+            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            console.log('Carrito cargado:', carrito); // Asegúrate de ver este log en la consola
+
+            let total = 0;
+
+            if (carrito.length === 0) {
+                cartItemsContainer.innerHTML = '<p>El carrito está vacío.</p>';
+            } else {
+                carrito.forEach(producto => {
+                    const itemElement = document.createElement('div');
+                    itemElement.classList.add('cart-item');
+
+                    itemElement.innerHTML = `
+                        <div>
+                            <h3>${producto.nombre}</h3>
+                            <p>Precio: $${producto.precio.toFixed(2)}</p>
+                            <p>Cantidad: ${producto.cantidad}</p>
+                            
+                            ${renderDetalles(producto.detalles)}
+                        </div>
+                        <button onclick="eliminarItem('${producto.nombre}')">Eliminar</button>
+                    `;
+
+                    total += producto.precio * producto.cantidad;
+                    cartItemsContainer.appendChild(itemElement);
+                });
+            }
+
+            cartTotalElement.textContent = total.toFixed(2);
+        });
+
+        function renderDetalles(detalles) {
+            if (!detalles) return '';
+
+            let detallesHTML = '<p>';
+
+            if (detalles.refrescos) {
+                detallesHTML += `Refrescos: ${detalles.refrescos.join(', ')}`;
+                detallesHTML += `<br>Soda: ${detalles.soda}`;
+            } else if (detalles.jugos) {
+                detallesHTML += `Jugos: ${detalles.jugos.join(', ')}`;
+                detallesHTML += `<br>Presentación: ${detalles.presentacion}`;
+            } else if (detalles.aguas) {
+                detallesHTML += `Aguas: ${detalles.aguas.join(', ')}`;
+            } else if (detalles.ingredientes) {
+                detallesHTML += `Ingredientes: ${detalles.ingredientes.join(', ')}`;
+            }
+
+            detallesHTML += '</p>';
+            return detallesHTML;
+        }
+
+        function eliminarItem(nombreProducto) {
+            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            carrito = carrito.filter(producto => producto.nombre !== nombreProducto);
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            window.location.reload();
+        }
+
+        function borrarCarrito() {
+            localStorage.removeItem('carrito');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

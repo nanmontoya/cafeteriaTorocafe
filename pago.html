@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Pago - ToroCafe</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #c1e1c1 0%, #f8fafc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 400px;
+            width: 95vw;
+            margin: 32px auto;
+            padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+            background-color: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(60, 60, 60, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #388e3c;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .option {
+            width: 100%;
+            margin-bottom: 1.2rem;
+        }
+        .payment-method {
+            display: flex;
+            align-items: center;
+            background: #f7f7f7;
+            border-radius: 10px;
+            padding: 0.7rem 1rem;
+            box-shadow: 0 1px 4px rgba(76, 175, 80, 0.07);
+            margin-bottom: 0.5rem;
+            transition: box-shadow 0.2s;
+        }
+        .payment-method input[type="radio"] {
+            accent-color: #4CAF50;
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+        .payment-method label {
+            margin-left: 12px;
+            font-size: 1rem;
+            color: #333;
+            cursor: pointer;
+        }
+        .checkout-btn {
+            width: 100%;
+            padding: 0.9rem 0;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #4CAF50 60%, #388e3c 100%);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 1.2rem;
+            letter-spacing: 1px;
+        }
+        .checkout-btn:hover {
+            background: linear-gradient(90deg, #388e3c 60%, #4CAF50 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.2rem 0.5rem 1rem 0.5rem;
+                border-radius: 12px;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+            .payment-method label {
+                font-size: 0.97rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Opciones de Pago</h1>
+        <div class="option">
+            <div class="payment-method">
+                <input type="radio" id="efectivo" name="metodo_pago" value="efectivo" checked>
+                <label for="efectivo">Pagar en Efectivo - Pasar a la cafetería a pagar</label>
+            </div>
+        </div>
+        <div class="option">
+            <div class="payment-method">
+                <input type="radio" id="tarjeta" name="metodo_pago" value="tarjeta">
+                <label for="tarjeta">Pagar con Tarjeta</label>
+            </div>
+        </div>
+        <button class="checkout-btn" onclick="realizarPago()">Pagar el pedido</button>
+    </div>
+    <div id="modal-tarjeta" style="display:none; position:fixed; z-index:3000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:18px; max-width:340px; width:95vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px 0 rgba(60,60,60,0.18); display:flex; flex-direction:column; align-items:center; position:relative;">
+            <h2 style="color:#388e3c; margin-bottom:18px;">Pago con Tarjeta</h2>
+            <form id="form-tarjeta" style="width:100%;">
+                <label style="display:block; margin-bottom:8px; color:#333;">Nombre en la tarjeta
+                    <input type="text" required maxlength="40" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid #e0e0e0;margin-top:4px;">
+                </label>
+                <label style="display:block; margin-bottom:8px; color:#333;">Número de tarjeta
+                    <input type="text" required maxlength="19" pattern="\d{16,19}" inputmode="numeric" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid #e0e0e0;margin-top:4px;">
+                </label>
+                <div style="display:flex; gap:10px;">
+                    <label style="flex:1; color:#333;">Vencimiento
+                        <input type="text" required maxlength="5" placeholder="MM/AA" pattern="\d{2}/\d{2}" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid #e0e0e0;margin-top:4px;">
+                    </label>
+                    <label style="flex:1; color:#333;">CVV
+                        <input type="password" required maxlength="4" pattern="\d{3,4}" inputmode="numeric" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid #e0e0e0;margin-top:4px;">
+                    </label>
+                </div>
+                <div id="qr-container" style="display:none; flex-direction:column; align-items:center; margin-top:18px;">
+                    <canvas id="qr-code"></canvas>
+                    <img id="qr-img" alt="Código QR" style="margin-top:12px; display:none; width:160px; height:160px; border-radius:12px; box-shadow:0 2px 8px rgba(60,60,60,0.10);" />
+                    <div style="margin-top:10px; color:#388e3c; font-weight:600;">¡Pago exitoso! Escanea tu QR para recoger tu pedido.</div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:22px;">
+                    
+                    <button type="submit" id="btn-pagar-tarjeta" style="background:#4CAF50;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:1rem;font-weight:500;cursor:pointer;">Pagar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="modal-efectivo" style="display:none; position:fixed; z-index:3000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:18px; max-width:340px; width:95vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px 0 rgba(60,60,60,0.18); display:flex; flex-direction:column; align-items:center; position:relative;">
+            <h2 style="color:#388e3c; margin-bottom:18px;">Pago en Efectivo</h2>
+            <div id="efectivo-total" style="font-size:1.2rem; color:#222; margin-bottom:10px;"></div>
+            <div style="color:#555; margin-bottom:10px;">Muestra este código QR en caja para pagar y recoger tu pedido.</div>
+            <canvas id="qr-code-efectivo"></canvas>
+            <img id="qr-img-efectivo" alt="Código QR" style="margin-top:12px; display:none; width:160px; height:160px; border-radius:12px; box-shadow:0 2px 8px rgba(60,60,60,0.10);" />
+            <div style="display:flex; justify-content:center; margin-top:22px;">
+                <button type="button" onclick="finalizarPagoEfectivo()" style="background:#4CAF50;color:#fff;border:none;border-radius:8px;padding:8px 32px;font-size:1rem;font-weight:500;cursor:pointer;">Listo</button>
+            </div>
+        </div>
+    </div>
+    <div id="modal-confirmacion-tarjeta" style="display:none; position:fixed; z-index:4000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:18px; max-width:340px; width:95vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px 0 rgba(60,60,60,0.18); display:flex; flex-direction:column; align-items:center; position:relative;">
+            <h2 style="color:#388e3c; margin-bottom:18px;">Pago realizado</h2>
+            <div id="total-tarjeta" style="font-size:1.2rem; color:#222; margin-bottom:10px;"></div>
+            <div style="color:#555; margin-bottom:10px;">Escanea este código QR para recoger tu pedido.</div>
+            <img id="qr-img-confirmacion" alt="Código QR" style="margin-top:12px; width:160px; height:160px; border-radius:12px; box-shadow:0 2px 8px rgba(60,60,60,0.10);" />
+            <div style="display:flex; justify-content:center; margin-top:22px;">
+                <button type="button" onclick="finalizarPagoTarjeta()" style="background:#4CAF50;color:#fff;border:none;border-radius:8px;padding:8px 32px;font-size:1rem;font-weight:500;cursor:pointer;">Listo</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script>
+        function mostrarModalTarjeta() {
+            document.getElementById('modal-tarjeta').style.display = 'flex';
+            document.getElementById('qr-container').style.display = 'none';
+            document.getElementById('btn-pagar-tarjeta').disabled = false;
+            document.getElementById('qr-img').style.display = 'none';
+        }
+        function cerrarModalTarjeta() {
+            document.getElementById('modal-tarjeta').style.display = 'none';
+            document.getElementById('form-tarjeta').reset();
+            document.getElementById('qr-img').style.display = 'none';
+        }
+
+        function mostrarModalEfectivo(total) {
+            document.getElementById('modal-efectivo').style.display = 'flex';
+            document.getElementById('efectivo-total').textContent = 'Total a pagar: $' + total.toFixed(2);
+            document.getElementById('qr-img-efectivo').style.display = 'none';
+            document.getElementById('qr-code-efectivo').style.display = 'block';
+            // Genera código de pedido
+            const codigoPedido = 'TORO-' + Math.floor(Math.random()*90000+10000);
+            // Genera QR en canvas
+            const qr = new QRious({
+                element: document.getElementById('qr-code-efectivo'),
+                value: codigoPedido,
+                size: 160,
+                background: '#fff',
+                foreground: '#388e3c'
+            });
+            // Convierte canvas a imagen y la muestra
+            setTimeout(() => {
+                const canvas = document.getElementById('qr-code-efectivo');
+                const img = document.getElementById('qr-img-efectivo');
+                img.src = canvas.toDataURL("image/png");
+                img.style.display = 'block';
+                canvas.style.display = 'none';
+            }, 300);
+        }
+
+        function finalizarPagoEfectivo() {
+            localStorage.removeItem('carrito');
+            window.location.href = 'index.html';
+        }
+
+        function realizarPago() {
+            const metodoPago = document.querySelector('input[name="metodo_pago"]:checked').value;
+            if (metodoPago === 'efectivo') {
+                // Calcula el total del carrito
+                let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+                let total = carrito.reduce((acc, item) => acc + (item.precio * (item.cantidad || 1)), 0);
+                mostrarModalEfectivo(total);
+            } else if (metodoPago === 'tarjeta') {
+                mostrarModalTarjeta();
+            }
+        }
+
+        // Calcula el total del carrito
+        function obtenerTotalCarrito() {
+            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            return carrito.reduce((acc, item) => acc + (item.precio * (item.cantidad || 1)), 0);
+        }
+
+        // Modifica el submit del formulario de tarjeta
+        document.getElementById('form-tarjeta').onsubmit = function(e) {
+            e.preventDefault();
+            const codigoPedido = 'TORO-' + Math.floor(Math.random()*90000+10000);
+            const total = obtenerTotalCarrito();
+
+            // Genera el QR en canvas (oculto)
+            const qr = new QRious({
+                value: codigoPedido,
+                size: 160,
+                background: '#fff',
+                foreground: '#388e3c'
+            });
+
+            // Muestra el modal de confirmación con total y QR
+            document.getElementById('modal-tarjeta').style.display = 'none';
+            document.getElementById('modal-confirmacion-tarjeta').style.display = 'flex';
+            document.getElementById('total-tarjeta').textContent = 'Total pagado: $' + total.toFixed(2);
+
+            // Pone el QR como imagen
+            document.getElementById('qr-img-confirmacion').src = qr.toDataURL("image/png");
+
+            // Limpia el carrito al mostrar el QR
+            localStorage.removeItem('carrito');
+        };
+
+        function finalizarPagoTarjeta() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

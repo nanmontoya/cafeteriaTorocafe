@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Historial de Pedidos - Torocafé</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: rgb(144, 238, 144); /* Fondo claro */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra suave en la parte inferior del encabezado */
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 250px; /* Tamaño ajustado del logotipo */
+            margin-right: 10px; /* Espacio entre los logotipos */
+        }
+
+        nav {
+            flex: 1; /* Ocupa todo el espacio restante */
+            text-align: center; /* Centrar elementos dentro de nav */
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center; /* Centrar elementos horizontalmente */
+        }
+
+        .nav-links li {
+            margin-left: 20px;
+        }
+
+        .nav-links li a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #f7f3f3;
+            background-color: #0e0d0d;
+            border: 1px solid #4CAF50; /* Borde sólido verde */
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        .nav-links li a:hover {
+            background-color: #1c7905; /* Fondo verde al pasar el mouse */
+            color:  #f7f3f3; /* Texto blanco al pasar el mouse */
+            border-color: #0b690e; /* Borde verde al pasar el mouse */
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #333;
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            margin-top: auto; /* Esto empuja el footer al final del contenedor flex */
+        }
+
+        h1 {
+            text-align: center;
+            color: #080808;
+        }
+
+        .historial-dia {
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+
+        .historial-dia h2 {
+            color: #007bff;
+        }
+
+        .pedido {
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #ffffff;
+        }
+
+        .pedido h3 {
+            color: #007bff;
+        }
+
+        .pedido p {
+            margin: 5px 0;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        /* Estilos para el filtro por fecha */
+.filters {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.filters input[type="date"] {
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.filters button {
+    padding: 10px 20px;
+    background-color: #0a0a0a;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.filters button:hover {
+    background-color: #1c7905;
+    transform: scale(1.05);
+}
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="LOGO.jpg" alt="ToroCafe" class="logo">
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="menu.html">Menú</a></li>
+                <li><a href="promociones.html">Promociones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+            </ul>
+        </nav>
+        <img src="uni.jpeg" alt="Logo" class="logo" width="45"
+        height="100"/>
+    </header>
+
+    <div class="content">
+        <h1>Historial de Pedidos</h1>
+
+        
+
+        <div class="filters">
+            <input type="date" id="fecha">
+            <button onclick="filterByDate()">Filtrar por Fecha</button>
+        </div>
+
+        <!-- Historial clasificado por día -->
+        <div id="historial">
+            <div class="historial-dia" data-fecha="2024-06-25">
+                <h2>Pedidos del 25 de junio de 2024</h2>
+                <div class="pedido">
+                    <h3>Pedido #MGYONG</h3>
+                    <p><strong>Cliente:</strong> Nancy Montoya</p>
+                    <p><strong>Usuario:</strong> Estudiante</p>
+                    <p><strong>Fecha:</strong> 2024-06-25</p>
+                    <p><strong>Ítems:</strong> Hamburguesa de pollo (2), Coca-cola 600ml (1), Gomitas pandita (1)</p>
+                    <p><strong>Total:</strong> $140.00</p>
+                    <p><strong>Pago:</strong> Efectivo</p>
+                </div>
+
+                <div class="pedido">
+                    <h3>Pedido #OMXSQR</h3>
+                    <p><strong>Cliente:</strong> Zacarias Lesso</p>
+                    <p><strong>Usuario:</strong> Maestro</p>
+                    <p><strong>Fecha:</strong> 2024-06-25</p>
+                    <p><strong>Ítems:</strong> Cafe Vainilla (1), Burrito Discada (1)</p>
+                    <p><strong>Total:</strong> $75.00</p>
+                    <p><strong>Pago:</strong> Transferencia</p>
+                </div>
+            
+        </div>
+
+     
+        <div class="historial-dia" data-fecha="2024-06-24">
+            <h2>Pedidos del 24 de junio de 2024</h2>
+            
+            <div class="pedido">
+                <h3>Pedido #ABCDOP</h3>
+                <p><strong>Cliente:</strong> Kenia Olivas</p>
+                <p><strong>Usuario:</strong> Estudiante</p>
+                <p><strong>Fecha:</strong> 2024-06-24</p>
+                <p><strong>Ítems:</strong> Pizza (1), Jugo de Naranja (1)</p>
+                <p><strong>Total:</strong> $90.00</p>
+                <p><strong>Pago:</strong> Efectivo</p>
+            </div>
+
+            <div class="pedido">
+                <h3>Pedido #OYNVNH</h3>
+                <p><strong>Cliente:</strong> Karina Sanchez</p>
+                <p><strong>Usuario:</strong> Estudiante</p>
+                <p><strong>Fecha:</strong> 2024-06-25</p>
+                <p><strong>Ítems:</strong> Sprite 600ml (1), Ensalada (1)</p>
+                <p><strong>Total:</strong> $80.00</p>
+                <p><strong>Pago:</strong> Transferencia</p>
+            </div>
+
+        <div class="historial-dia" data-fecha="2024-06-23">
+                <h2>Pedidos del 23 de junio de 2024</h2>
+
+            <div class="pedido">
+                <h3>Pedido #EFGHUI</h3>
+        <p><strong>Cliente:</strong> Alejandro Solis</p>
+        <p><strong>Usuario:</strong> Maestro</p>
+        <p><strong>Fecha:</strong> 2024-06-23</p>
+        <p><strong>Ítems:</strong> Boneless (1), Agua Mineral (1)</p>
+        <p><strong>Total:</strong> $85.00</p>
+        <p><strong>Pago:</strong> Transferencia</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <img src="piepagina.jpeg"
+        width="1300"
+  height="100"/>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Atención - Torocafé</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #c1e1c1 0%, #f8fafc 100%);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(60,60,60,0.08);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 220px;
+            max-width: 48vw;
+            margin-right: 10px;
+            transition: width 0.2s;
+        }
+
+        nav {
+            flex: 1;
+            text-align: center;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .nav-links li a {
+            display: block;
+            padding: 10px 22px;
+            text-decoration: none;
+            color: #388e3c;
+            background-color: #e8f5e9;
+            border: 1.5px solid #4CAF50;
+            border-radius: 24px;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.05);
+        }
+
+        .nav-links li a:hover {
+            background: linear-gradient(90deg, #4CAF50 60%, #388e3c 100%);
+            color: #fff;
+            border-color: #388e3c;
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.12);
+        }
+
+        .logo-right {
+            width: 110px;
+            height: auto;
+            margin-left: 10px;
+            transition: width 0.2s;
+        }
+
+        .content {
+            flex: 1;
+            padding: 32px 8px 24px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: #388e3c;
+            margin-bottom: 32px;
+            font-size: 2.1rem;
+            font-weight: 700;
+        }
+
+        .pedidos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 28px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .pedido {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 rgba(60, 60, 60, 0.10);
+            padding: 24px 18px 18px 18px;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            transition: box-shadow 0.3s, transform 0.3s;
+            border: 2px solid #e0e0e0;
+            position: relative;
+        }
+
+        .pedido:hover {
+            box-shadow: 0 8px 32px 0 rgba(60, 60, 60, 0.18);
+            transform: translateY(-4px) scale(1.01);
+            border-color: #4CAF50;
+        }
+
+        .pedido h3 {
+            color: #388e3c;
+            margin: 0 0 8px 0;
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .pedido p {
+            margin: 4px 0;
+            color: #444;
+            font-size: 1rem;
+        }
+
+        .estado-pendiente {
+            background-color: #ffc107;
+            color: #333;
+            padding: 2px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .estado-Maestro {
+            background-color: #4ecf42;
+            color: #333;
+            padding: 2px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .total {
+            color: #388e3c;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            padding: 10px 0;
+            background: linear-gradient(90deg, #4CAF50 60%, #388e3c 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.10);
+        }
+
+        .btn:hover {
+            background: linear-gradient(90deg, #388e3c 60%, #4CAF50 100%);
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.18);
+        }
+
+        footer {
+            text-align: center;
+            padding: 0;
+            background-color: #333;
+            color: white;
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-img {
+            width: 100%;
+            max-width: 1300px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 900px) {
+            .pedidos-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .logo {
+                width: 150px;
+            }
+
+            .logo-right {
+                width: 70px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                padding: 10px 8px;
+            }
+
+            .logo {
+                width: 110px;
+                margin-bottom: 8px;
+            }
+
+            .logo-right {
+                width: 45px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .content {
+                padding: 12px 2px 12px 2px;
+            }
+
+            .pedidos-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                max-width: 99vw;
+            }
+
+            .pedido {
+                padding: 14px 8px 12px 8px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="LOGO.jpg" alt="ToroCafe" class="logo">
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="menu.html">Menú</a></li>
+                <li><a href="promociones.html">Promociones</a></li>
+                <li><a href="historial.html">Historial</a></li>
+            </ul>
+        </nav>
+        <img src="uni.jpeg" alt="Logo" class="logo-right"/>
+    </header>
+
+    <div class="content">
+        <h1>Panel de Atención - Torocafé</h1>
+        <div class="pedidos-grid">
+            <!-- Ejemplo de pedidos pendientes -->
+            <div class="pedido" data-usuario="Estudiante" data-fecha="2024-06-25" data-items='[
+                {"nombre": "Hamburguesa de pollo", "precio": 50, "cantidad": 2},
+                {"nombre": "Coca-cola 600ml", "precio": 20, "cantidad": 1},
+                {"nombre": "Gomitas pandita", "precio": 10, "cantidad": 1}
+            ]'>
+                <h3>Pedido #MGYONG</h3>
+                <p><strong>Cliente:</strong> Nancy Montoya</p>
+                <p><strong>Usuario:</strong> Estudiante</p>
+                <p><strong>Fecha:</strong> 2024-06-25</p>
+                <p><strong>Ítems:</strong> Hamburguesa de pollo (2), Coca-cola 600ml (1), Gomitas pandita (1)</p>
+                <p><strong>Estado:</strong><span class="estado-pendiente">Pendiente</span></p>
+                <p><strong>Total:</strong> <u class="total">$140.00</u></p>
+                <p><strong>Pago:</strong> Efectivo</p>
+                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
+            </div>
+
+            <div class="pedido" data-usuario="Maestro" data-fecha="2024-06-25" data-items='[
+                {"nombre": "Cafe Vainilla", "precio": 30, "cantidad": 1},
+                {"nombre": "Burrito Discada", "precio": 45, "cantidad": 1}
+            ]'>
+                <h3>Pedido #OMXSQR</h3>
+                <p><strong>Cliente:</strong> Zacarias Lesso</p>
+                <p><strong>Usuario:</strong><span class="estado-Maestro">Maestro</span></p>
+                <p><strong>Fecha:</strong> 2024-06-25</p>
+                <p><strong>Ítems:</strong> Cafe Vainilla (1), Burrito Discada (1)</p>
+                <p><strong>Estado:</strong> <span class="estado-pendiente">Pendiente</span></p>
+                <p><strong>Total:</strong> <u class="total">$75.00</u></p>
+                <p><strong>Pago:</strong> Transferencia</p>
+                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
+            </div>
+
+            <div class="pedido" data-usuario="Estudiante" data-fecha="2024-06-24" data-items='[
+                {"nombre": "Sprite 600ml", "precio": 20, "cantidad": 1},
+                {"nombre": "Ensalada", "precio": 60, "cantidad": 1}
+            ]'>
+                <h3>Pedido #OYNVNH</h3>
+                <p><strong>Cliente:</strong> Karina Sanchez</p>
+                <p><strong>Usuario:</strong> Estudiante</p>
+                <p><strong>Fecha:</strong> 2024-06-24</p>
+                <p><strong>Ítems:</strong> Sprite 600ml (1), Ensalada (1)</p>
+                <p><strong>Estado:</strong> <span class="estado-pendiente">Pendiente</span></p>
+                <p><strong>Total:</strong> <u class="total">$80.00</u></p>
+                <p><strong>Pago:</strong> Transferencia</p>
+                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
+            </div>
+
+            <div class="pedido" data-usuario="Estudiante" data-fecha="2024-06-24" data-items='[
+                {"nombre": "Pizza", "precio": 25, "cantidad": 2},
+                {"nombre": "Jugo de Naranja", "precio": 25, "cantidad": 1}
+            ]'>
+                <h3>Pedido #ABCDOP</h3>
+                <p><strong>Cliente:</strong> Kenia Olivas</p>
+                <p><strong>Usuario:</strong> Estudiante</p>
+                <p><strong>Fecha:</strong> 2024-06-24</p>
+                <p><strong>Ítems:</strong> Pizza (2), Jugo de Naranja (1)</p>
+                <p><strong>Estado:</strong> <span class="estado-pendiente">Pendiente</span></p>
+                <p><strong>Total:</strong> <u class="total">$75.00</u></p>
+                <p><strong>Pago:</strong> Efectivo</p>
+                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
+            </div>
+
+            <div class="pedido" data-usuario="Maestro" data-fecha="2024-06-23" data-items='[
+                {"nombre": "Boneless ", "precio": 60, "cantidad": 1},
+                {"nombre": "Agua Mineral", "precio": 25, "cantidad": 1}
+            ]'>
+                <h3>Pedido #EFGHUI</h3>
+                <p><strong>Cliente:</strong> Alejandro Solis</p>
+                <p><strong>Usuario:</strong> <span class="estado-Maestro">Maestro</span></p>
+                <p><strong>Fecha:</strong> 2024-06-23</p>
+                <p><strong>Ítems:</strong> Boneless (1), Agua Mineral (1)</p>
+                <p><strong>Estado:</strong> <span class="estado-pendiente">Pendiente</span></p>
+                <p><strong>Total:</strong> <u class="total">$85.00</u></p>
+                <p><strong>Pago:</strong> Transferencia</p>
+                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <img src="piepagina.jpeg" class="footer-img" alt="Pie de página"/>
+    </footer>
+
+    <script>
+        // Script para manejar eventos de botones (simulado)
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                button.parentNode.style.display = 'none'; // Simula marcar como completado 
+            });
+        });
+    </script>
+</body>
+</html>

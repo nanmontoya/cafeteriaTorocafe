@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú - ToroCafe Comida</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #c1e1c1 0%, #f8fafc 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 32px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(60,60,60,0.08);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 180px;
+            max-width: 40vw;
+            margin-right: 10px;
+        }
+
+        nav {
+            flex: 1;
+            text-align: center;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .nav-links li a {
+            display: block;
+            padding: 10px 22px;
+            text-decoration: none;
+            color: #388e3c;
+            background-color: #e8f5e9;
+            border: 1.5px solid #4CAF50;
+            border-radius: 24px;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.05);
+        }
+
+        .nav-links li a:hover {
+            background: linear-gradient(90deg, #4CAF50 60%, #388e3c 100%);
+            color: #fff;
+            border-color: #388e3c;
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.12);
+        }
+
+        main {
+            width: 100%;
+            flex: 1;
+        }
+
+        .menu-section {
+            padding: 48px 16px 32px 16px;
+            background: linear-gradient(135deg, #c1e1c1 0%, #f8fafc 100%);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 32px;
+        }
+
+        .menu-item {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 rgba(60, 60, 60, 0.10);
+            max-width: 260px;
+            min-width: 200px;
+            width: 100%;
+            text-align: center;
+            padding: 28px 18px 22px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-7px) scale(1.03);
+            box-shadow: 0 8px 32px 0 rgba(60, 60, 60, 0.18);
+        }
+
+        .menu-img {
+            width: 100%;
+            max-width: 140px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.10);
+            background: #e0e0e0;
+        }
+
+        .menu-item h3 {
+            margin: 0 0 8px 0;
+            color: #388e3c;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.3);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 24px 18px;
+            border: none;
+            width: 90%;
+            max-width: 420px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(60, 60, 60, 0.18);
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            position: absolute;
+            right: 18px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #388e3c;
+        }
+
+        .option-item {
+            background-color: #f7f7f7;
+            padding: 12px 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.07);
+            margin-bottom: 14px;
+            text-align: left;
+        }
+
+        .option-item h3 {
+            margin: 0 0 4px 0;
+            color: #333;
+            font-size: 1.08rem;
+        }
+
+        .quantity-input {
+            width: 50px;
+            border-radius: 6px;
+            border: 1px solid #c1e1c1;
+            padding: 4px 6px;
+            margin-left: 8px;
+        }
+
+        .salsas-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .salsas-container label {
+            background: #e8f5e9;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 0.97rem;
+            color: #388e3c;
+        }
+
+        .confirm-btn {
+            background: linear-gradient(90deg, #4CAF50 60%, #388e3c 100%);
+            color: white;
+            border: none;
+            padding: 12px 0;
+            width: 100%;
+            font-size: 1.08rem;
+            font-weight: 600;
+            border-radius: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.10);
+        }
+
+        .confirm-btn:hover {
+            background: linear-gradient(90deg, #388e3c 60%, #4CAF50 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        footer {
+            text-align: center;
+            padding: 0;
+            background-color: #333;
+            color: white;
+        }
+
+        .footer-img {
+            width: 100%;
+            max-width: 1300px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .cart-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            margin-left: 18px;
+            font-size: 1.8rem;
+            color: #388e3c;
+            transition: color 0.2s;
+        }
+        .cart-btn:hover {
+            color: #4CAF50;
+        }
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e53935;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            padding: 2px 7px;
+            font-weight: bold;
+        }
+        /* Carrito modal */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            z-index: 20;
+            right: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.25);
+        }
+        .cart-modal-content {
+            background: #fff;
+            width: 95%;
+            max-width: 340px; /* Más pequeño */
+            height: auto;
+            max-height: 80vh; /* Limita la altura */
+            position: fixed;
+            right: 0;
+            top: 40px;
+            box-shadow: -2px 0 16px rgba(60,60,60,0.18);
+            padding: 18px 12px 12px 12px;
+            overflow-y: auto;
+            border-radius: 18px 0 0 18px;
+            display: flex;
+            flex-direction: column;
+            z-index: 30;
+        }
+        .cart-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .cart-modal-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: #388e3c;
+        }
+        .cart-close {
+            font-size: 1.7rem;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .cart-close:hover {
+            color: #388e3c;
+        }
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .cart-item {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 0;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .cart-item-title {
+            font-weight: 600;
+            color: #333;
+        }
+        .cart-item-desc {
+            color: #666;
+            font-size: 0.97rem;
+        }
+        .cart-item-price {
+            color: #4CAF50;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+        .cart-total {
+            margin-top: 18px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #388e3c;
+            text-align: right;
+        }
+        .cart-empty {
+            color: #888;
+            text-align: center;
+            margin-top: 40px;
+        }
+        .cart-clear-btn {
+            background: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: background 0.2s;
+        }
+        .cart-clear-btn:hover {
+            background: #b71c1c;
+        }
+        .cart-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .cart-modal-footer .cart-clear-btn,
+        .cart-modal-footer .cart-pay-btn {
+            flex: 1 1 0;
+            min-width: 0;
+            background: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 0;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0;
+        }
+        .cart-modal-footer .cart-pay-btn {
+            background: #4CAF50;
+        }
+        .cart-modal-footer .cart-clear-btn:hover {
+            background: #b71c1c;
+        }
+        .cart-modal-footer .cart-pay-btn:hover {
+            background: #388e3c;
+        }
+        @media (max-width: 900px) {
+            .menu-section {
+                gap: 20px;
+            }
+            .menu-item {
+                max-width: 45vw;
+                min-width: 160px;
+            }
+            .logo {
+                width: 120px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                padding: 10px 8px;
+            }
+            .logo {
+                width: 90px;
+                margin-bottom: 8px;
+            }
+            .nav-links {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .menu-section {
+                flex-direction: column;
+                align-items: center;
+                padding: 24px 4px 16px 4px;
+            }
+            .menu-item {
+                max-width: 95vw;
+                min-width: 0;
+                padding: 18px 8px 14px 8px;
+            }
+            .menu-img {
+                max-width: 90vw;
+                height: 90px;
+            }
+            .footer-img {
+                max-width: 100vw;
+                height: auto;
+            }
+            .modal-content {
+                padding: 14px 4px;
+            }
+            .cart-modal-content {
+                max-width: 98vw;
+                border-radius: 0;
+                padding: 10px 2px 8px 2px;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="logo.jpg" alt="ToroCafe" class="logo">
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="menu.html">Menú</a></li>
+                <li><a href="promociones.html">Promociones</a></li>
+            </ul>
+        </nav>
+        <button class="cart-btn" onclick="openCart()">
+            <i class="fa fa-shopping-cart"></i>
+            <span class="cart-count" id="cart-count">0</span>
+        </button>
+        <img src="Picture1.png" alt="Picture1" class="logo">
+    </header>
+
+    <main>
+        <section class="menu-section">
+            <div class="menu-item" onclick="showModal('burritoModal')">
+                <img src="burrito.png" alt="Burritos" class="menu-img">
+                <h3>Burritos</h3>
+            </div>
+            <div class="menu-item" onclick="showModal('hamburguesaModal')">
+                <img src="hambu.png" alt="Hamburguesas" class="menu-img">
+                <h3>Hamburguesas</h3>
+            </div>
+            <div class="menu-item" onclick="showModal('sandwichModal')">
+                <img src="sand.png" alt="Sandwich" class="menu-img">
+                <h3>Sandwich</h3>
+            </div>
+            <div class="menu-item" onclick="showModal('quesadillaModal')">
+                <img src="quesadilla.png" alt="Quesadillas" class="menu-img">
+                <h3>Quesadillas</h3>
+            </div>
+            <div class="menu-item" onclick="showModal('bonelessModal')">
+                <img src="boneles.png" alt="Boneless" class="menu-img">
+                <h3>Boneless</h3>
+            </div>
+        </section>
+
+        <!-- Modal para Burritos -->
+        <div id="burritoModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('burritoModal')">&times;</span>
+                <h2>Opciones de Burritos</h2>
+                <div class="option-item">
+                    <h3>Burrito de Deshebrada Rojo</h3>
+                    <p>Precio: $25.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="burrito-deshebrada-rojo" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Burrito de Deshebrada Verde</h3>
+                    <p>Precio: $25.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="burrito-deshebrada-verde" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Burrito de Asado</h3>
+                    <p>Precio: $30.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="burrito-asado" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Burrito de Prensado Chicharrón</h3>
+                    <p>Precio: $30.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="burrito-prensado-chicharron" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Burrito de Discada</h3>
+                    <p>Precio: $25.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="burrito-discada" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+                    <button class="confirm-btn" id="confirm-btn-burrito" disabled onclick="submitBurritoSelection()">Agregar al Carrito</button>
+                    <button class="confirm-btn" style="background:#e53935;" onclick="closeModal('burritoModal')">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Hamburguesas -->
+        <div id="hamburguesaModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('hamburguesaModal')">&times;</span>
+                <h2>Opciones de Hamburguesas</h2>
+                <div class="option-item">
+                    <h3>Hamburguesa Sencilla</h3>
+                    <p>Precio: $35.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="hamburguesa-sencilla" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Hamburguesa Doble Carne</h3>
+                    <p>Precio: $45.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="hamburguesa-doble-carne" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Hamburguesa de Pollo Empanizado</h3>
+                    <p>Precio: $40.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="hamburguesa-pollo-empanizado" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Hamburguesa en Combo: Papas y Soda</h3>
+                    <p>Precio: $50.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="hamburguesa-combo" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+                    <button class="confirm-btn" id="confirm-btn" disabled onclick="submitHamburguesaSelection()">Agregar al Carrito</button>
+                    <button class="confirm-btn" style="background:#e53935;" onclick="closeModal('hamburguesaModal')">Cerrar</button>
+                </div>
+            </div>
+        </div>
+        <!-- Modal de Sandwich -->
+        <div id="sandwichModal" class="modal">
+            <div class="modal-content">
+                
+                <h2>Opciones de Sandwich</h2>
+                <div class="option-item">
+                    <h3>Pollo a la Plancha</h3>
+                    <p>Precio: $40.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="sandwich-pollo" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Jamón con Queso</h3>
+                    <p>Precio: $25.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="sandwich-jamon-queso" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+                    <button class="confirm-btn" id="confirm-btn" disabled onclick="submitSandwichSelection()">Agregar al Carrito</button>
+                    <button class="confirm-btn" style="background:#e53935;" onclick="closeSandwichModal()">Cerrar</button>
+                    
+                </div>
+            </div>
+        </div>
+        <!-- Modal de Quesadillas -->
+        <div id="quesadillaModal" class="modal">
+            <div class="modal-content">
+         
+                <h2>Opciones de Quesadillas</h2>
+                <div class="option-item">
+                    <h3>Quesadilla Sencilla</h3>
+                    <p>Precio: $20.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="quesadilla-sencilla" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Quesadilla con Jamón</h3>
+                    <p>Precio: $25.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="quesadilla-jamon" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Quesadilla Montada</h3>
+                    <p>Precio: $35.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="quesadilla-montada" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+                    <button class="confirm-btn" id="confirm-btn" disabled onclick="submitQuesadillaSelection()">Agregar al Carrito</button>
+                    <button class="confirm-btn" style="background:#e53935;" onclick="closeQuesadillaModal()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+        <!-- Modal de Boneless -->
+        <div id="bonelessModal" class="modal">
+            <div class="modal-content">
+               
+                <h2>Opciones de Boneless</h2>
+                <div class="option-item">
+                    <h3>Boneless Sencillos</h3>
+                    <p>Precio: $60.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="boneless-sencillos" min="0" value="0"> Cantidad
+                    </label>
+                </div>
+                <div class="option-item">
+                    <h3>Boneless con Papas y Soda</h3>
+                    <p>Precio: $100.00</p>
+                    <label>
+                        <input type="number" class="quantity-input" name="boneless-papas-salsa" min="0" value="0"> Cantidad
+                    </label>
+                    <div class="salsas-container">
+                        <label><input type="checkbox" name="salsa-bufalo"> Salsa Bufalo</label>
+                        <label><input type="checkbox" name="salsa-habanero"> Salsa Habanero</label>
+                        <label><input type="checkbox" name="salsa-bbq"> Salsa BBQ</label>
+                        <label><input type="checkbox" name="salsa-luisinana"> Salsa Luisiana</label>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+                    <button class="confirm-btn" id="confirm-btn" disabled onclick="submitBonelessSelection()">Agregar al carrito</button>
+                    <button class="confirm-btn" style="background:#e53935;" onclick="closeBonelessModal()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Carrito Modal -->
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-modal-content">
+            <div class="cart-modal-header">
+                <h2>Carrito de Compras</h2>
+                <button id="btn-guardar-pedido" title="Guardar pedido" style="background:#4CAF50; color:#fff; border:none; border-radius:50%; width:36px; height:36px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        <i class="fa fa-save"></i>
+    </button>
+                <span class="cart-close" onclick="closeCart()">&times;</span>
+            </div>
+            <div id="numero-pedido-guardado" style="margin-bottom:10px; color:#388e3c; font-weight:600; font-size:1.08rem; display:none;"></div>
+            <div class="cart-items" id="cart-items"></div>
+            <div class="cart-total" id="cart-total"></div>
+            <div class="cart-modal-footer">
+                <button class="cart-clear-btn" onclick="clearCart()">Borrar</button>
+                <a href="pago.html" class="cart-pay-btn">Pagar</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <img src="piepagina.jpeg" class="footer-img" alt="Pie de página"/>
+    </footer>
+    <script>
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = "block";
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        // --- Carrito de compras ---
+        let cart = [];
+
+        function openCart() {
+            document.getElementById('cart-modal').style.display = 'block';
+            renderCart();
+        }
+        function closeCart() {
+            document.getElementById('cart-modal').style.display = 'none';
+        }
+        function clearCart() {
+            cart = [];
+            renderCart();
+            updateCartCount();
+        }
+        function updateCartCount() {
+            document.getElementById('cart-count').textContent = cart.reduce((acc, item) => acc + item.qty, 0);
+        }
+        function renderCart() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            const cartTotalDiv = document.getElementById('cart-total');
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<div class="cart-empty">El carrito está vacío.</div>';
+                cartTotalDiv.textContent = '';
+                return;
+            }
+            let total = 0;
+            cartItemsDiv.innerHTML = cart.map(item => {
+                total += item.price * item.qty;
+                return `
+                    <div class="cart-item">
+                        <div class="cart-item-title">${item.title} <span style="float:right;">x${item.qty}</span></div>
+                        <div class="cart-item-desc">${item.desc}</div>
+                        <div class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+            cartTotalDiv.textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        function addToCart(title, desc, price, qty) {
+            qty = parseInt(qty);
+            if (!qty || qty <= 0) return;
+            const idx = cart.findIndex(item => item.title === title && item.desc === desc && item.price === price);
+            if (idx >= 0) {
+                cart[idx].qty += qty;
+            } else {
+                cart.push({ title, desc, price, qty });
+            }
+            updateCartCount();
+        }
+
+        // --- MODALS: actualiza los botones para agregar al carrito ---
+        // Burritos
+        function submitBurritoSelection() {
+            const burritos = [
+                { name: "Burrito de Deshebrada Rojo", price: 25, input: document.querySelector('input[name="burrito-deshebrada-rojo"]') },
+                { name: "Burrito de Deshebrada Verde", price: 25, input: document.querySelector('input[name="burrito-deshebrada-verde"]') },
+                { name: "Burrito de Asado", price: 30, input: document.querySelector('input[name="burrito-asado"]') },
+                { name: "Burrito de Prensado Chicharrón", price: 30, input: document.querySelector('input[name="burrito-prensado-chicharron"]') },
+                { name: "Burrito de Discada", price: 25, input: document.querySelector('input[name="burrito-discada"]') }
+            ];
+            let added = false;
+            burritos.forEach(b => {
+                const qty = parseInt(b.input.value);
+                if (qty > 0) {
+                    addToCart(b.name, '', b.price, qty);
+                    added = true;
+                }
+            });
+            if (added) {
+                closeModal('burritoModal');
+                renderCart();
+            } else {
+                alert("Selecciona al menos un burrito para agregar al carrito.");
+            }
+        }
+
+        // Hamburguesas
+        function submitHamburguesaSelection() {
+            const hamburguesas = [
+                { name: "Hamburguesa Sencilla", price: 35, input: document.querySelector('input[name="hamburguesa-sencilla"]') },
+                { name: "Hamburguesa Doble Carne", price: 45, input: document.querySelector('input[name="hamburguesa-doble-carne"]') },
+                { name: "Hamburguesa de Pollo Empanizado", price: 40, input: document.querySelector('input[name="hamburguesa-pollo-empanizado"]') },
+                { name: "Hamburguesa en Combo: Papas y Soda", price: 50, input: document.querySelector('input[name="hamburguesa-combo"]') }
+            ];
+            let added = false;
+            hamburguesas.forEach(h => {
+                const qty = parseInt(h.input.value);
+                if (qty > 0) {
+                    addToCart(h.name, '', h.price, qty);
+                    added = true;
+                }
+            });
+            if (added) {
+                closeModal('hamburguesaModal');
+                renderCart();
+            } else {
+                alert("Selecciona al menos una hamburguesa para agregar al carrito.");
+            }
+        }
+
+        // Sandwich
+        function submitSandwichSelection() {
+            const sandwiches = [
+                { name: "Sandwich de Pollo a la Plancha", price: 40, input: document.querySelector('input[name="sandwich-pollo"]') },
+                { name: "Sandwich de Jamón con Queso", price: 25, input: document.querySelector('input[name="sandwich-jamon-queso"]') }
+            ];
+            let added = false;
+            sandwiches.forEach(s => {
+                const qty = parseInt(s.input.value);
+                if (qty > 0) {
+                    addToCart(s.name, '', s.price, qty);
+                    added = true;
+                }
+            });
+            if (added) {
+                closeModal('sandwichModal');
+                renderCart();
+            } else {
+                alert("Selecciona al menos un sandwich para agregar al carrito.");
+            }
+        }
+
+        // Quesadillas
+        function submitQuesadillaSelection() {
+            const quesadillas = [
+                { name: "Quesadilla Sencilla", price: 20, input: document.querySelector('input[name="quesadilla-sencilla"]') },
+                { name: "Quesadilla con Jamón", price: 25, input: document.querySelector('input[name="quesadilla-jamon"]') },
+                { name: "Quesadilla Montada", price: 35, input: document.querySelector('input[name="quesadilla-montada"]') }
+            ];
+            let added = false;
+            quesadillas.forEach(q => {
+                const qty = parseInt(q.input.value);
+                if (qty > 0) {
+                    addToCart(q.name, '', q.price, qty);
+                    added = true;
+                }
+            });
+            if (added) {
+                closeModal('quesadillaModal');
+                renderCart();
+            } else {
+                alert("Selecciona al menos una quesadilla para agregar al carrito.");
+            }
+        }
+
+        // Boneless
+        function submitBonelessSelection() {
+            const bonelessSencillos = parseInt(document.querySelector('input[name="boneless-sencillos"]').value);
+            const bonelessPapasSalsa = parseInt(document.querySelector('input[name="boneless-papas-salsa"]').value);
+            let added = false;
+
+            if (bonelessSencillos > 0) {
+                addToCart("Boneless Sencillos", '', 60, bonelessSencillos);
+                added = true;
+            }
+            if (bonelessPapasSalsa > 0) {
+                // Salsas seleccionadas
+                const salsas = [];
+                if (document.querySelector('input[name="salsa-bufalo"]').checked) salsas.push("Salsa Bufalo");
+                if (document.querySelector('input[name="salsa-habanero"]').checked) salsas.push("Salsa Habanero");
+                if (document.querySelector('input[name="salsa-bbq"]').checked) salsas.push("Salsa BBQ");
+                if (document.querySelector('input[name="salsa-luisinana"]').checked) salsas.push("Salsa Luisiana");
+                addToCart("Boneless con Papas y Soda", `Salsas: ${salsas.join(", ")}`, 100, bonelessPapasSalsa);
+                added = true;
+            }
+            if (added) {
+                closeModal('bonelessModal');
+                renderCart();
+            } else {
+                alert("Selecciona al menos un boneless para agregar al carrito.");
+            }
+        }
+
+        // Habilitar o deshabilitar el botón de agregar al carrito según cantidad
+        document.addEventListener('input', function (e) {
+            // Burritos
+            const burritoInputs = [
+                'burrito-deshebrada-rojo',
+                'burrito-deshebrada-verde',
+                'burrito-asado',
+                'burrito-prensado-chicharron',
+                'burrito-discada'
+            ].map(name => document.querySelector(`input[name="${name}"]`));
+            if (burritoInputs.every(i => i)) {
+                const total = burritoInputs.reduce((sum, input) => sum + parseInt(input.value || 0), 0);
+                document.getElementById('confirm-btn-burrito').disabled = total < 1;
+            }
+            // Hamburguesas
+            const hamburguesaInputs = [
+                'hamburguesa-sencilla',
+                'hamburguesa-doble-carne',
+                'hamburguesa-pollo-empanizado',
+                'hamburguesa-combo'
+            ].map(name => document.querySelector(`input[name="${name}"]`));
+            if (hamburguesaInputs.every(i => i)) {
+                const total = hamburguesaInputs.reduce((sum, input) => sum + parseInt(input.value || 0), 0);
+                const btns = document.querySelectorAll('#hamburguesaModal .confirm-btn');
+                btns.forEach(btn => btn.disabled = total < 1);
+            }
+            // Sandwich
+            const sandwichInputs = [
+                'sandwich-pollo',
+                'sandwich-jamon-queso'
+            ].map(name => document.querySelector(`input[name="${name}"]`));
+            if (sandwichInputs.every(i => i)) {
+                const total = sandwichInputs.reduce((sum, input) => sum + parseInt(input.value || 0), 0);
+                const btns = document.querySelectorAll('#sandwichModal .confirm-btn');
+                btns.forEach(btn => btn.disabled = total < 1);
+            }
+            // Quesadillas
+            const quesadillaInputs = [
+                'quesadilla-sencilla',
+                'quesadilla-jamon',
+                'quesadilla-montada'
+            ].map(name => document.querySelector(`input[name="${name}"]`));
+            if (quesadillaInputs.every(i => i)) {
+                const total = quesadillaInputs.reduce((sum, input) => sum + parseInt(input.value || 0), 0);
+                const btns = document.querySelectorAll('#quesadillaModal .confirm-btn');
+                btns.forEach(btn => btn.disabled = total < 1);
+            }
+            // Boneless
+            const bonelessInputs = [
+                'boneless-sencillos',
+                'boneless-papas-salsa'
+            ].map(name => document.querySelector(`input[name="${name}"]`));
+            if (bonelessInputs.every(i => i)) {
+                const total = bonelessInputs.reduce((sum, input) => sum + parseInt(input.value || 0), 0);
+                const btns = document.querySelectorAll('#bonelessModal .confirm-btn');
+                btns.forEach(btn => btn.disabled = total < 1);
+            }
+        });
+
+        // Cerrar modales al hacer clic fuera de ellos
+        window.onclick = function(event) {
+            const modals = [
+                "sandwichModal",
+                "quesadillaModal",
+                "bonelessModal",
+                "hamburguesaModal",
+                "burritoModal",
+                "cart-modal"
+            ];
+            modals.forEach(id => {
+                const modal = document.getElementById(id);
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            });
+        };
+
+        // Inicializar contador de carrito al cargar
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+    </script>
+</body>
+</html>

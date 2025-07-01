@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cafetería El Buen Café</title>
+   
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #c1e1c1 0%, #f8fafc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 2.5rem 2rem 2rem 2rem;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(60, 60, 60, 0.15);
+            text-align: center;
+            width: 100%;
+            max-width: 370px;
+            transition: box-shadow 0.3s;
+        }
+
+        .login-container:hover {
+            box-shadow: 0
+             12px 40px 0 rgba(60, 60, 60, 0.22);
+        }
+
+        .logo {
+            width: 180px; /* Ajusta el tamaño del logo a un valor grande pero proporcional */
+            max-width: 80%;
+            margin-bottom: 1.5rem;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.12);
+            object-fit: cover;
+        }
+
+        .login-container h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        label {
+            font-size: 1rem;
+            color: #4CAF50;
+            text-align: left;
+            margin-bottom: 0.2rem;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #f7f7f7;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px #c1e1c1;
+            background: #fff;
+        }
+
+        .button {
+            padding: 0.9rem 0;
+            background: linear-gradient(90deg, #4CAF50 60%, #388e3c 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 0.5rem;
+            text-decoration: none;
+            display: block;
+        }
+
+        .button:hover {
+            background: linear-gradient(90deg, #388e3c 60%, #4CAF50 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        .register-link {
+            margin-top: 1.5rem;
+            font-size: 0.97rem;
+        }
+
+        .register-link a {
+            color: #388e3c;
+            text-decoration: none;
+            font-weight: 500;
+            transition: text-decoration 0.2s;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Estilo para la notificación */
+        #notification {
+            display: none;
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e53935;
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 10px;
+            box-shadow: 0 2px 16px rgba(60, 60, 60, 0.15);
+            font-size: 1.05rem;
+            z-index: 9999;
+            min-width: 220px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+  <div id="notification"></div>
+  <div class="login-container">
+    <img src="logo.jpg" alt="El Buen Café" class="logo">
+    <h2>Iniciar Sesión</h2>
+    <form id="login-form">
+      <div>
+        <label for="username">Usuario</label>
+        <input type="text" id="username" name="username" required autocomplete="username">
+      </div>
+      <div>
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="button">Iniciar</button>
+    </form>
+    <div class="register-link">
+      <p>¿Aún no tienes cuenta? <a href="registro.html">Regístrate</a></p>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs compat -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    // ✅ Configuración de tu Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDk8V1gmkMYQkvMfyHluRLRm-z6AcWapf4",
+      authDomain: "torocafe-78491.firebaseapp.com",
+      projectId: "torocafe-78491",
+      storageBucket: "torocafe-78491.appspot.com",
+      messagingSenderId: "277196893553",
+      appId: "1:277196893553:web:3dc51a57e8b6a940251ad0",
+      measurementId: "G-J69K463VYJ"
+    };
+
+    // ✅ Inicialización correcta usando firebase-compat
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ✅ Notificación personalizada
+    function showNotification(msg, color = "#e53935") {
+      const notif = document.getElementById('notification');
+      notif.textContent = msg;
+      notif.style.background = color;
+      notif.style.display = 'block';
+      setTimeout(() => { notif.style.display = 'none'; }, 3000);
+    }
+
+    // ✅ Evento de login
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!username || !password) {
+        showNotification('Por favor, completa todos los campos.');
+        return;
+      }
+
+      try {
+        const query = await db.collection('usuarios').where('username', '==', username).limit(1).get();
+        if (query.empty) {
+          showNotification('Usuario no encontrado.');
+          return;
+        }
+
+        const userData = query.docs[0].data();
+        if (userData.password !== password) {
+          showNotification('Contraseña incorrecta.');
+          return;
+        }
+
+        if (userData.rol === 'cliente') {
+          showNotification('¡Bienvenido!', '#4CAF50');
+          setTimeout(() => { window.location.href = 'menu.html'; }, 1000);
+        } else {
+          showNotification('Acceso solo para clientes.');
+        }
+
+      } catch (error) {
+        showNotification('Error al iniciar sesión. Intenta de nuevo.');
+        console.error(error);
+      }
+    });
+
+    // ✅ Soporte a click en botón además de Enter
+    document.querySelector('.button').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('login-form').dispatchEvent(new Event('submit'));
+    });
+  </script>
+</body>
+</html>
