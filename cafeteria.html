@@ -343,6 +343,21 @@
                 <p><strong>Pago:</strong> Transferencia</p>
                 <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
             </div>
+
+            <div class="pedido" data-usuario="Estudiante" data-fecha="2024-06-22" data-items='[
+                {"nombre": "Taco de carne", "precio": 40, "cantidad": 3},
+                {"nombre": "Fanta 500ml", "precio": 15, "cantidad": 1}
+            ]'>
+                <h3>Pedido #XYZABC</h3>
+                <p><strong>Cliente:</strong> Luis Perez</p>
+                <p><strong>Usuario:</strong> Estudiante</p>
+                <p><strong>Fecha:</strong> 2024-06-22</p>
+                <p><strong>Ítems:</strong> Taco de carne (3), Fanta 500ml (1)</p>
+                <p><strong>Estado:</strong> <span class="estado-pendiente">Pendiente</span></p>
+                <p><strong>Total:</strong> <u class="total">$135.00</u></p>
+                <p><strong>Pago:</strong> Efectivo</p>
+                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
+            </div>
         </div>
     </div>
 
@@ -357,6 +372,80 @@
             button.addEventListener('click', () => {
                 button.parentNode.style.display = 'none'; // Simula marcar como completado 
             });
+        });
+    </script>
+    <!-- Agrega este script antes del cierre de </body> -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script>
+        // Configuración de Firebase (ajusta si es necesario)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDk8V1gmkMYQkvMfyHluRLRm-z6AcWapf4",
+            authDomain: "torocafe-78491.firebaseapp.com",
+            projectId: "torocafe-78491",
+            storageBucket: "torocafe-78491.appspot.com",
+            messagingSenderId: "277196893553",
+            appId: "1:277196893553:web:3dc51a57e8b6a940251ad0",
+            measurementId: "G-J69K463VYJ"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // Función para renderizar los pedidos
+        function renderPedidos(pedidos) {
+            const grid = document.querySelector('.pedidos-grid');
+            grid.innerHTML = '';
+            pedidos.forEach(doc => {
+                const pedido = doc.data();
+                const id = doc.id;
+                const estado = pedido.estado === 'entregado' ? 'entregado' : 'pendiente';
+                const colorEstado = estado === 'entregado' ? '#43a047' : '#ffc107';
+                const colorTexto = estado === 'entregado' ? '#fff' : '#333';
+                const btnText = estado === 'entregado' ? 'Entregado' : 'Marcar como Entregado';
+                const btnDisabled = estado === 'entregado' ? 'disabled' : '';
+                const btnBg = estado === 'entregado' ? 'background:#43a047;' : '';
+                const fecha = pedido.fecha && pedido.fecha.toDate ? pedido.fecha.toDate() : new Date();
+                const fechaStr = fecha.toLocaleDateString() + ' ' + fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                // Mostrar descripción y carrito
+                let carritoHtml = '';
+                if (Array.isArray(pedido.carrito)) {
+                    carritoHtml = '<ul style="margin:6px 0 0 0; padding-left:18px;">' +
+                        pedido.carrito.map(item =>
+                            `<li>${item.nombre || item.title || 'Producto'} (${item.cantidad || item.qty || 1}) - $${item.precio ? item.precio.toFixed(2) : '0.00'}</li>`
+                        ).join('') +
+                        '</ul>';
+                }
+
+                grid.innerHTML += `
+                    <div class="pedido" data-id="${id}">
+                        <h3>Pedido #${pedido.numeroPedido || ''}</h3>
+                        <p><strong>Fecha:</strong> ${fechaStr}</p>
+                        <p><strong>Estado:</strong> <span class="estado-pendiente" style="background:${colorEstado};color:${colorTexto};">${estado.charAt(0).toUpperCase() + estado.slice(1)}</span></p>
+                        <p><strong>Total:</strong> <u class="total">$${pedido.total ? pedido.total.toFixed(2) : '0.00'}</u></p>
+                        <p><strong>Método de pago:</strong> ${pedido.metodoPago || '---'}</p>
+                        <p><strong>Descripción:</strong> ${pedido.descripcion || ''}</p>
+                        <p><strong>Carrito:</strong>${carritoHtml}</p>
+                        <button class="btn btn-entregar" style="${btnBg}" ${btnDisabled}><i class="fa fa-check"></i> ${btnText}</button>
+                    </div>
+                `;
+            });
+
+            // Agrega evento a los botones de entregar
+            document.querySelectorAll('.btn-entregar').forEach(btn => {
+                btn.onclick = async function() {
+                    const card = btn.closest('.pedido');
+                    const id = card.getAttribute('data-id');
+                    await db.collection('pedidos').doc(id).update({estado: 'entregado'});
+                };
+            });
+        }
+
+        // Escucha en tiempo real los pedidos ordenados por fecha descendente
+        db.collection('pedidos').orderBy('fecha', 'desc').onSnapshot(snapshot => {
+            renderPedidos(snapshot.docs);
         });
     </script>
 </body>

@@ -216,8 +216,11 @@
         if (userData.rol === 'cliente') {
           showNotification('¡Bienvenido!', '#4CAF50');
           setTimeout(() => { window.location.href = 'menu.html'; }, 1000);
+        } else if (userData.rol === 'admin' || userData.rol === 'administrador') {
+          showNotification('Bienvenido Administrador', '#1976D2');
+          setTimeout(() => { window.location.href = 'cafeteria.html'; }, 1000);
         } else {
-          showNotification('Acceso solo para clientes.');
+          showNotification('Acceso solo para clientes o administradores.');
         }
 
       } catch (error) {
