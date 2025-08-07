@@ -265,6 +265,9 @@
 
     <div class="content">
         <h1>Panel de Atención - Torocafé</h1>
+        <div style="display: flex; justify-content: flex-start; width: 100%; max-width: 1100px; margin-bottom: 18px;">
+           
+        </div>
         <div class="pedidos-grid">
             <!-- Aquí se mostrarán automáticamente los pedidos pendientes de la base de datos -->
         </div>
@@ -277,6 +280,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    
 
     <script>
         // Configuración de Firebase
@@ -317,7 +321,7 @@
                 if (Array.isArray(pedido.carrito)) {
                     carritoHtml = '<ul style="margin:6px 0 0 0; padding-left:18px;">' +
                         pedido.carrito.map(item =>
-                            `<li>${item.nombre || item.title || 'Producto'} (${item.cantidad || item.qty || 1}) - $${item.precio ? item.precio.toFixed(2) : '0.00'}</li>`
+                            `<li>${item.nombre || item.title || 'Producto'} (${item.cantidad || item.qty || 1}) - $${(item.precio || item.price ? (item.precio || item.price).toFixed(2) : '0.00')}</li>`
                         ).join('') +
                         '</ul>';
                 }
@@ -325,7 +329,7 @@
                 grid.innerHTML += `
                     <div class="pedido" data-id="${id}" style="border:1px solid #ccc; border-radius:8px; padding:12px; margin-bottom:12px;">
                         <h3>Pedido #${pedido.numeroPedido || id}</h3>
-                        <p><strong>Usuario:</strong> ${pedido.username || '---'}</p>
+                        <p><strong>Usuario:</strong> ${pedido.usuario || '---'}</p>
                         <p><strong>Fecha:</strong> ${fechaStr}</p>
                         <p><strong>Estado:</strong> 
                             <span class="estado-pendiente" style="padding:4px 8px; border-radius:5px; background:${colorEstado};color:${colorTexto};">
@@ -346,35 +350,39 @@
           
         }
 
-        // Escucha cambios en tiempo real
+        // Escucha cambios en tiempo real y muestra los pedidos pendientes ordenados por número de pedido ascendente
         db.collection('pedidos')
             .where('estado', '==', 'pendiente')
-            //.orderBy('fecha', 'asc')
+            //.orderBy('numeroPedido', 'asc') // Ordena por número de pedido ascendente
             .onSnapshot(snapshot => {
                 console.log('Pedidos actualizados');
                 renderPedidos(snapshot.docs);
             });
 
-        // Escucha botones
-document.querySelectorAll('.btn-entregar').forEach(btn => {
-    btn.onclick = async function () {
-        const card = btn.closest('.pedido');
+        // Delegación de eventos para el botón "Marcar como Entregado"
+document.addEventListener('click', async function(e) {
+    if (e.target && e.target.classList.contains('btn-entregar') && !e.target.disabled) {
+        const card = e.target.closest('.pedido');
         const id = card.getAttribute('data-id');
-
         try {
             await db.collection('pedidos').doc(id).update({ estado: 'entregado' });
             console.log(`Pedido ${id} marcado como entregado`);
-
-            // Eliminar de la vista
-            card.remove();
+            // Opcional: actualiza el botón y el estado en la tarjeta sin recargar toda la lista
+            e.target.textContent = 'Entregado';
+            e.target.disabled = true;
+            e.target.style.background = '#43a047';
+            const estadoSpan = card.querySelector('.estado-pendiente');
+            if (estadoSpan) {
+                estadoSpan.textContent = 'Entregado';
+                estadoSpan.style.background = '#43a047';
+                estadoSpan.style.color = '#fff';
+            }
         } catch (error) {
             console.error('Error al actualizar el pedido:', error);
+            alert('No se pudo marcar como entregado. Intenta de nuevo.');
         }
-
-        
-    };
+    }
 });
-
     </script>
 </body>
 </html>

@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Pedidos - Torocafé</title>
+    <title>Panel de Atención - Torocafé</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -75,9 +74,10 @@
         }
 
         .logo-right {
-            width: 70px;
+            width: 110px;
             height: auto;
             margin-left: 10px;
+            transition: width 0.2s;
         }
 
         .content {
@@ -96,73 +96,37 @@
             font-weight: 700;
         }
 
-        .filters {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .filters input[type="date"] {
-            padding: 10px 15px;
-            margin-right: 10px;
-            border: 1.5px solid #4CAF50;
-            border-radius: 8px;
-            font-size: 16px;
-            background: #f8fafc;
-        }
-
-        .filters button {
-            padding: 10px 22px;
-            background: linear-gradient(90deg, #4CAF50 60%, #388e3c 100%);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, box-shadow 0.2s;
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.10);
-        }
-
-        .filters button:hover {
-            background: linear-gradient(90deg, #388e3c 60%, #4CAF50 100%);
-            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.18);
-        }
-
-        .historial-grid {
+        .pedidos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 28px;
             width: 100%;
             max-width: 1100px;
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-        }
-
-        .historial-dia {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px 0 rgba(60, 60, 60, 0.10);
-            padding: 24px 18px 18px 18px;
-        }
-
-        .historial-dia h2 {
-            color: #388e3c;
-            margin-bottom: 18px;
-            font-size: 1.25rem;
-            font-weight: 600;
         }
 
         .pedido {
-            background: #f8fafc;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px 0 rgba(60, 60, 60, 0.06);
-            padding: 16px 14px 14px 14px;
-            margin-bottom: 16px;
-            border: 1.5px solid #e0e0e0;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 rgba(60, 60, 60, 0.10);
+            padding: 24px 18px 18px 18px;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            transition: box-shadow 0.3s, transform 0.3s;
+            border: 2px solid #e0e0e0;
+            position: relative;
+        }
+
+        .pedido:hover {
+            box-shadow: 0 8px 32px 0 rgba(60, 60, 60, 0.18);
+            transform: translateY(-4px) scale(1.01);
+            border-color: #4CAF50;
         }
 
         .pedido h3 {
             color: #388e3c;
             margin: 0 0 8px 0;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 600;
         }
 
@@ -172,18 +136,47 @@
             font-size: 1rem;
         }
 
+        .estado-pendiente {
+            background-color: #ffc107;
+            color: #333;
+            padding: 2px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .estado-Maestro {
+            background-color: #4ecf42;
+            color: #333;
+            padding: 2px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
         .total {
             color: #388e3c;
             font-weight: 700;
             font-size: 1.1rem;
         }
 
-        .footer-img {
-            width: 100%;
-            max-width: 1300px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
+        .btn {
+            padding: 10px 0;
+            background: linear-gradient(90deg, #4CAF50 60%, #388e3c 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.10);
+        }
+
+        .btn:hover {
+            background: linear-gradient(90deg, #388e3c 60%, #4CAF50 100%);
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.18);
         }
 
         footer {
@@ -195,17 +188,26 @@
             width: 100%;
         }
 
+        .footer-img {
+            width: 100%;
+            max-width: 1300px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
         @media (max-width: 900px) {
-            .historial-grid {
-                max-width: 99vw;
+            .pedidos-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
             }
 
             .logo {
-                width: 120px;
+                width: 150px;
             }
 
             .logo-right {
-                width: 40px;
+                width: 70px;
             }
         }
 
@@ -216,12 +218,12 @@
             }
 
             .logo {
-                width: 90px;
+                width: 110px;
                 margin-bottom: 8px;
             }
 
             .logo-right {
-                width: 30px;
+                width: 45px;
             }
 
             .nav-links {
@@ -233,19 +235,18 @@
                 padding: 12px 2px 12px 2px;
             }
 
-            .historial-grid {
+            .pedidos-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
                 max-width: 99vw;
             }
 
-            .historial-dia {
-                padding: 12px 4px 10px 4px;
-            }
-
             .pedido {
-                padding: 10px 4px 8px 4px;
+                padding: 14px 8px 12px 8px;
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
     <header>
@@ -255,35 +256,20 @@
         <nav>
             <ul class="nav-links">
                 <li><a href="index.html">Inicio</a></li>
-                <li><a href="menu.html">Menú</a></li>
-                <li><a href="promociones.html">Promociones</a></li>
-                <li><a href="historial.html">Historial</a></li>
+                
+                <li><a href="cafeteria.html">Pedidos Pendientes</a></li>
             </ul>
         </nav>
         <img src="uni.jpeg" alt="Logo" class="logo-right"/>
     </header>
 
     <div class="content">
-        <h1>Historial de Pedidos</h1>
-        <div class="filters">
-            <input type="date" id="fecha">
-            <button onclick="filterByDate()"><i class="fa fa-filter"></i> Filtrar por Fecha</button>
+        <h1>Panel de Atención - Torocafé</h1>
+        <div style="display: flex; justify-content: flex-start; width: 100%; max-width: 1100px; margin-bottom: 18px;">
+           
         </div>
-        <div class="historial-grid" id="historial">
-            <!-- Aquí se mostrarán los pedidos agrupados por día -->
-            <!-- Ejemplo de estructura:
-            <div class="historial-dia">
-                <h2>Pedidos del 25 de junio de 2024</h2>
-                <div class="pedido">
-                    <h3>Pedido #MGYONG</h3>
-                    <p><strong>Usuario:</strong> Estudiante</p>
-                    <p><strong>Fecha:</strong> 2024-06-25</p>
-                    <p><strong>Ítems:</strong> Hamburguesa de pollo (2), Coca-cola 600ml (1), Gomitas pandita (1)</p>
-                    <p><strong>Total:</strong> <span class="total">$140.00</span></p>
-                    <p><strong>Pago:</strong> Efectivo</p>
-                </div>
-            </div>
-            -->
+        <div class="pedidos-grid">
+            <!-- Aquí se mostrarán automáticamente los pedidos pendientes de la base de datos -->
         </div>
     </div>
 
@@ -291,92 +277,13 @@
         <img src="piepagina.jpeg" class="footer-img" alt="Pie de página"/>
     </footer>
 
-    <!-- Si usas Firebase y quieres mostrar el historial dinámicamente, agrega este script -->
-    <!--
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    
+
     <script>
-        // Configuración de Firebase (ajusta si es necesario)
-        const firebaseConfig = { ... };
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
-
-        // Función para agrupar pedidos por fecha
-        function agruparPorFecha(pedidos) {
-            const grupos = {};
-            pedidos.forEach(doc => {
-                const pedido = doc.data();
-                let fecha = pedido.fecha && pedido.fecha.toDate ? pedido.fecha.toDate() : new Date();
-                const fechaStr = fecha.toLocaleDateString();
-                if (!grupos[fechaStr]) grupos[fechaStr] = [];
-                grupos[fechaStr].push(pedido);
-            });
-            return grupos;
-        }
-
-        // Renderizar historial
-        db.collection('pedidos').orderBy('fecha', 'desc').onSnapshot(snapshot => {
-            const historial = document.getElementById('historial');
-            historial.innerHTML = '';
-            const grupos = agruparPorFecha(snapshot.docs);
-            Object.keys(grupos).sort((a, b) => new Date(b) - new Date(a)).forEach(fecha => {
-                let html = `<div class="historial-dia"><h2>Pedidos del ${fecha}</h2>`;
-                grupos[fecha].forEach(pedido => {
-                    html += `
-                        <div class="pedido">
-                            <h3>Pedido #${pedido.numeroPedido || ''}</h3>
-                            <p><strong>Usuario:</strong> ${pedido.usuario || ''}</p>
-                            <p><strong>Fecha:</strong> ${fecha}</p>
-                            <p><strong>Ítems:</strong> ${pedido.descripcion || ''}</p>
-                            <p><strong>Total:</strong> <span class="total">$${pedido.total ? pedido.total.toFixed(2) : '0.00'}</span></p>
-                            <p><strong>Pago:</strong> ${pedido.metodoPago || ''}</p>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-                historial.innerHTML += html;
-            });
-        });
-
-        // Filtro por fecha
-        function filterByDate() {
-            const fecha = document.getElementById('fecha').value;
-            if (!fecha) return;
-            db.collection('pedidos').orderBy('fecha', 'desc').get().then(snapshot => {
-                const historial = document.getElementById('historial');
-                historial.innerHTML = '';
-                const grupos = agruparPorFecha(snapshot.docs);
-                if (grupos[fecha]) {
-                    let html = `<div class="historial-dia"><h2>Pedidos del ${fecha}</h2>`;
-                    grupos[fecha].forEach(pedido => {
-                        html += `
-                            <div class="pedido">
-                                <h3>Pedido #${pedido.numeroPedido || ''}</h3>
-                                <p><strong>Usuario:</strong> ${pedido.usuario || ''}</p>
-                                <p><strong>Fecha:</strong> ${fecha}</p>
-                                <p><strong>Ítems:</strong> ${pedido.descripcion || ''}</p>
-                                <p><strong>Total:</strong> <span class="total">$${pedido.total ? pedido.total.toFixed(2) : '0.00'}</span></p>
-                                <p><strong>Pago:</strong> ${pedido.metodoPago || ''}</p>
-                            </div>
-                        `;
-                    });
-                    html += '</div>';
-                    historial.innerHTML = html;
-                } else {
-                    historial.innerHTML = `<div class="historial-dia"><h2>No hay pedidos para esta fecha.</h2></div>`;
-                }
-            });
-        }
-    </script>
-    -->
-
-    <!-- Agrega este script ANTES del cierre de </body> para mostrar solo pedidos entregados -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <script>
-        // Configuración de Firebase (ajusta si es necesario)
+        // Configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDk8V1gmkMYQkvMfyHluRLRm-z6AcWapf4",
             authDomain: "torocafe-78491.firebaseapp.com",
@@ -391,92 +298,92 @@
         }
         const db = firebase.firestore();
 
-        // Agrupa pedidos por fecha
-        function agruparPorFecha(pedidos) {
-            const grupos = {};
+      
+        // Función para mostrar los pedidos
+        function renderPedidos(pedidos) {
+            const grid = document.querySelector('.pedidos-grid');
+            grid.innerHTML = '';
+
             pedidos.forEach(doc => {
                 const pedido = doc.data();
-                let fecha = pedido.fecha && pedido.fecha.toDate ? pedido.fecha.toDate() : new Date();
-                const fechaStr = fecha.toLocaleDateString();
-                if (!grupos[fechaStr]) grupos[fechaStr] = [];
-                grupos[fechaStr].push(pedido);
-            });
-            return grupos;
-        }
-
-        // Renderiza solo pedidos entregados
-        db.collection('pedidos')
-          .where('estado', '==', 'entregado')
-          .orderBy('fecha', 'desc')
-          .onSnapshot(snapshot => {
-            const historial = document.getElementById('historial');
-            historial.innerHTML = '';
-            snapshot.docs.forEach(doc => {
-                const pedido = doc.data();
                 const id = doc.id;
+                const estado = pedido.estado === 'entregado' ? 'entregado' : 'pendiente';
+                const colorEstado = estado === 'entregado' ? '#43a047' : '#ffc107';
+                const colorTexto = estado === 'entregado' ? '#fff' : '#333';
+                const btnText = estado === 'entregado' ? 'Entregado' : 'Marcar como Entregado';
+                const btnDisabled = estado === 'entregado' ? 'disabled' : '';
+                const btnBg = estado === 'entregado' ? 'background:#43a047;' : '';
                 const fecha = pedido.fecha && pedido.fecha.toDate ? pedido.fecha.toDate() : new Date();
                 const fechaStr = fecha.toLocaleDateString() + ' ' + fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                const colorEstado = '#43a047';
-                const colorTexto = '#fff';
 
                 // Lista de productos
                 let carritoHtml = '';
                 if (Array.isArray(pedido.carrito)) {
                     carritoHtml = '<ul style="margin:6px 0 0 0; padding-left:18px;">' +
                         pedido.carrito.map(item =>
-                            `<li>${item.nombre || item.title || 'Producto'} (${item.cantidad || item.qty || 1}) - $${item.precio ? item.precio.toFixed(2) : '0.00'}</li>`
+                            `<li>${item.nombre || item.title || 'Producto'} (${item.cantidad || item.qty || 1}) - $${(item.precio || item.price ? (item.precio || item.price).toFixed(2) : '0.00')}</li>`
                         ).join('') +
                         '</ul>';
                 }
 
-                historial.innerHTML += `
-                    <div class="pedido" data-id="${id}" style="border:1px solid #ccc; border-radius:8px; padding:12px; margin-bottom:12px; background:#f8fafc;">
+                grid.innerHTML += `
+                    <div class="pedido" data-id="${id}" style="border:1px solid #ccc; border-radius:8px; padding:12px; margin-bottom:12px;">
                         <h3>Pedido #${pedido.numeroPedido || id}</h3>
                         <p><strong>Usuario:</strong> ${pedido.usuario || '---'}</p>
                         <p><strong>Fecha:</strong> ${fechaStr}</p>
                         <p><strong>Estado:</strong> 
                             <span class="estado-pendiente" style="padding:4px 8px; border-radius:5px; background:${colorEstado};color:${colorTexto};">
-                                Entregado
+                                ${estado.charAt(0).toUpperCase() + estado.slice(1)}
                             </span>
                         </p>
                         <p><strong>Total:</strong> $${pedido.total ? pedido.total.toFixed(2) : '0.00'}</p>
                         <p><strong>Método de pago:</strong> ${pedido.metodoPago || '---'}</p>
                         <p><strong>Descripción:</strong> ${pedido.descripcion || '---'}</p>
                         <p><strong>Carrito:</strong> ${carritoHtml}</p>
+                        <button class="btn btn-entregar" style="${btnBg}; padding:6px 12px; border:none; border-radius:4px; cursor:pointer;" ${btnDisabled}>
+                            ${btnText}
+                        </button>
                     </div>
                 `;
             });
-        });
 
-        // Filtro por fecha solo para entregados
-        function filterByDate() {
-            const fecha = document.getElementById('fecha').value;
-            if (!fecha) return;
-            db.collection('pedidos').where('estado', '==', 'entregado').orderBy('fecha', 'desc').get().then(snapshot => {
-                const historial = document.getElementById('historial');
-                historial.innerHTML = '';
-                const grupos = agruparPorFecha(snapshot.docs);
-                if (grupos[fecha]) {
-                    let html = `<div class="historial-dia"><h2>Pedidos del ${fecha}</h2>`;
-                    grupos[fecha].forEach(pedido => {
-                        html += `
-                            <div class="pedido">
-                                <h3>Pedido #${pedido.numeroPedido || ''}</h3>
-                                <p><strong>Usuario:</strong> ${pedido.usuario || ''}</p>
-                                <p><strong>Fecha:</strong> ${fecha}</p>
-                                <p><strong>Ítems:</strong> ${pedido.descripcion || ''}</p>
-                                <p><strong>Total:</strong> <span class="total">$${pedido.total ? pedido.total.toFixed(2) : '0.00'}</span></p>
-                                <p><strong>Pago:</strong> ${pedido.metodoPago || ''}</p>
-                            </div>
-                        `;
-                    });
-                    html += '</div>';
-                    historial.innerHTML = html;
-                } else {
-                    historial.innerHTML = `<div class="historial-dia"><h2>No hay pedidos para esta fecha.</h2></div>`;
-                }
-            });
+          
         }
+
+        // Escucha cambios en tiempo real y muestra los pedidos pendientes ordenados por número de pedido ascendente
+        db.collection('pedidos')
+            .where('estado', '==', 'entregado') // Solo pedidos entregados
+            ///.orderBy('numeroPedido', 'asc') // Puedes ordenar si lo deseas
+            .onSnapshot(snapshot => {
+                console.log('Pedidos actualizados');
+                renderPedidos(snapshot.docs);
+            });
+
+        // Delegación de eventos para el botón "Marcar como Entregado"
+document.addEventListener('click', async function(e) {
+    if (e.target && e.target.classList.contains('btn-entregar') && !e.target.disabled) {
+        const card = e.target.closest('.pedido');
+        const id = card.getAttribute('data-id');
+        try {
+            await db.collection('pedidos').doc(id).update({ estado: 'entregado' });
+            console.log(`Pedido ${id} marcado como entregado`);
+            // Opcional: actualiza el botón y el estado en la tarjeta sin recargar toda la lista
+            e.target.textContent = 'Entregado';
+            e.target.disabled = true;
+            e.target.style.background = '#43a047';
+            const estadoSpan = card.querySelector('.estado-pendiente');
+            if (estadoSpan) {
+                estadoSpan.textContent = 'Entregado';
+                estadoSpan.style.background = '#43a047';
+                estadoSpan.style.color = '#fff';
+            }
+        } catch (error) {
+            console.error('Error al actualizar el pedido:', error);
+            alert('No se pudo marcar como entregado. Intenta de nuevo.');
+        }
+    }
+});
     </script>
 </body>
 </html>
+

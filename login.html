@@ -215,9 +215,13 @@
 
         if (userData.rol === 'cliente') {
           showNotification('¡Bienvenido!', '#4CAF50');
+          // Guarda el nombre real o username en localStorage
+          localStorage.setItem('usuario', userData.nombre ? userData.nombre : userData.username);
           setTimeout(() => { window.location.href = 'menu.html'; }, 1000);
         } else if (userData.rol === 'admin' || userData.rol === 'administrador') {
           showNotification('Bienvenido Administrador', '#1976D2');
+          // También puedes guardar el nombre para admin si lo deseas
+          localStorage.setItem('usuario', userData.nombre ? userData.nombre : userData.username);
           setTimeout(() => { window.location.href = 'cafeteria.html'; }, 1000);
         } else {
           showNotification('Acceso solo para clientes o administradores.');
