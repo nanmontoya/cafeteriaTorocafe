@@ -487,58 +487,90 @@
             document.getElementById(formId).classList.remove("active");
         }
 
-        // Carrito de compras
-        function getCarrito() {
-            return JSON.parse(localStorage.getItem('carrito')) || [];
-        }
-        function setCarrito(carrito) {
-            localStorage.setItem('carrito', JSON.stringify(carrito));
-        }
+        // --- Carrito de compras global ---
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        // Actualiza el contador del carrito
         function updateCartCount() {
-            const carrito = getCarrito();
-            const count = carrito.reduce((acc, item) => acc + (item.cantidad || 1), 0);
-            document.getElementById('cart-count').textContent = count;
+            document.getElementById('cart-count').textContent = cart.reduce((acc, item) => acc + (item.qty || 1), 0);
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
+
+        // Renderiza el carrito en el modal
         function renderCart() {
-            const carrito = getCarrito();
             const cartItemsDiv = document.getElementById('cart-items');
             const cartTotalDiv = document.getElementById('cart-total');
-            if (carrito.length === 0) {
+            if (cart.length === 0) {
                 cartItemsDiv.innerHTML = '<div class="cart-empty">El carrito está vacío.</div>';
                 cartTotalDiv.textContent = '';
                 return;
             }
             let total = 0;
-            cartItemsDiv.innerHTML = carrito.map(item => {
-                const desc = item.ingredientes && item.ingredientes.length > 0
+            cartItemsDiv.innerHTML = cart.map(item => {
+                const desc = item.desc || (item.ingredientes && item.ingredientes.length > 0
                     ? 'Ingredientes: ' + item.ingredientes.join(', ')
-                    : '';
-                const subtotal = (item.precio * (item.cantidad || 1));
+                    : '');
+                const subtotal = (item.price * (item.qty || 1));
                 total += subtotal;
                 return `
                     <div class="cart-item">
-                        <div class="cart-item-title">${item.nombre} <span style="float:right;">x${item.cantidad || 1}</span></div>
+                        <div class="cart-item-title">${item.title || item.nombre} <span style="float:right;">x${item.qty || 1}</span></div>
                         <div class="cart-item-desc">${desc}</div>
                         <div class="cart-item-price">$${subtotal.toFixed(2)}</div>
                     </div>
                 `;
             }).join('');
             cartTotalDiv.textContent = `Total: $${total.toFixed(2)}`;
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
+
+        // Agrega productos al carrito y suma si ya existe (comida, ensaladas, bebidas, etc.)
+        function addToCart(title, desc, price, qty, ingredientes) {
+            qty = parseInt(qty);
+            if (!qty || qty <= 0) return;
+            // Busca por nombre, descripción y precio para evitar duplicados
+            const idx = cart.findIndex(item =>
+                item.title === title &&
+                item.desc === desc &&
+                item.price === price &&
+                JSON.stringify(item.ingredientes || []) === JSON.stringify(ingredientes || [])
+            );
+            if (idx >= 0) {
+                cart[idx].qty += qty;
+            } else {
+                cart.push({ title, desc, price, qty, ingredientes });
+            }
+            updateCartCount();
+            renderCart();
+        }
+
+        // Limpia el carrito y localStorage
+        function clearCart() {
+            cart = [];
+            updateCartCount();
+            renderCart();
+            localStorage.removeItem('cart');
+        }
+
+        // Al abrir el carrito, renderiza el contenido actualizado
         function openCart() {
             document.getElementById('cart-modal').style.display = 'block';
             renderCart();
         }
+
+        // Al cerrar el carrito, guarda el estado
         function closeCart() {
             document.getElementById('cart-modal').style.display = 'none';
-        }
-        function clearCart() {
-            localStorage.removeItem('carrito');
-            renderCart();
-            updateCartCount();
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
 
-        // Agregar al carrito desde el formulario (sin alert)
+        // Al cargar la página, recupera el carrito de localStorage y actualiza el contador
+        document.addEventListener('DOMContentLoaded', function() {
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
+            updateCartCount();
+        });
+
+        // --- Actualiza el formulario para usar el carrito global ---
         function agregarAlCarrito(event, nombreProducto, precio) {
             event.preventDefault();
             const form = event.target;
@@ -550,32 +582,10 @@
                 return;
             }
 
-            let carrito = getCarrito();
-            // Si ya existe el mismo producto con los mismos ingredientes, suma la cantidad
-            const idx = carrito.findIndex(item =>
-                item.nombre === nombreProducto &&
-                JSON.stringify(item.ingredientes) === JSON.stringify(ingredientes)
-            );
-            if (idx >= 0) {
-                carrito[idx].cantidad += cantidad;
-            } else {
-                carrito.push({
-                    nombre: nombreProducto,
-                    precio: parseFloat(precio),
-                    cantidad: cantidad,
-                    ingredientes: ingredientes
-                });
-            }
-            setCarrito(carrito);
-            updateCartCount();
-            renderCart();
+            // Usa el carrito global
+            addToCart(nombreProducto, '', parseFloat(precio), cantidad, ingredientes);
             cerrarFormulario(form.closest('.ingredient-form').id);
         }
-
-        // Inicializar contador de carrito al cargar
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCartCount();
-        });
 
         // Cerrar modal de carrito al hacer clic fuera
         window.onclick = function(event) {

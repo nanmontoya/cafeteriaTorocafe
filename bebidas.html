@@ -508,8 +508,12 @@
         <div class="cart-modal-content">
             <div class="cart-modal-header">
                 <h2>Carrito de Compras</h2>
+                <button id="btn-guardar-pedido" title="Guardar pedido" style="background:#4CAF50; color:#fff; border:none; border-radius:50%; width:36px; height:36px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        <i class="fa fa-save"></i>
+    </button>
                 <span class="cart-close" onclick="closeCart()">&times;</span>
             </div>
+            <div id="numero-pedido-guardado" style="margin-bottom:10px; color:#388e3c; font-weight:600; font-size:1.08rem; display:none;"></div>
             <div class="cart-items" id="cart-items"></div>
             <div class="cart-total" id="cart-total"></div>
             <div class="cart-modal-footer">
@@ -532,63 +536,96 @@
             document.getElementById(formId).classList.remove("active");
         }
 
-        // Carrito de compras
-        function getCarrito() {
-            return JSON.parse(localStorage.getItem('carrito')) || [];
+        // --- Carrito de compras global ---
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+// Actualiza el contador del carrito
+function updateCartCount() {
+    document.getElementById('cart-count').textContent = cart.reduce((acc, item) => acc + (item.qty || item.cantidad || 1), 0);
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+// Renderiza el carrito en el modal
+function renderCart() {
+    const cartItemsDiv = document.getElementById('cart-items');
+    const cartTotalDiv = document.getElementById('cart-total');
+    if (cart.length === 0) {
+        cartItemsDiv.innerHTML = '<div class="cart-empty">El carrito está vacío.</div>';
+        cartTotalDiv.textContent = '';
+        return;
+    }
+    let total = 0;
+    cartItemsDiv.innerHTML = cart.map(item => {
+        let desc = '';
+        if (item.ingredientes && item.ingredientes.length > 0) {
+            desc = 'Ingredientes: ' + item.ingredientes.join(', ');
+        } else if (item.detalles) {
+            if (item.detalles.refrescos) desc += 'Refrescos: ' + item.detalles.refrescos.join(', ') + '. ';
+            if (item.detalles.soda) desc += 'Soda: ' + item.detalles.soda + '. ';
+            if (item.detalles.jugos) desc += 'Jugos: ' + item.detalles.jugos.join(', ') + '. ';
+            if (item.detalles.presentacion) desc += 'Presentación: ' + item.detalles.presentacion + '. ';
+            if (Array.isArray(item.detalles)) desc += item.detalles.join(', ');
         }
-        function setCarrito(carrito) {
-            localStorage.setItem('carrito', JSON.stringify(carrito));
-        }
-        function updateCartCount() {
-            const carrito = getCarrito();
-            const count = carrito.reduce((acc, item) => acc + (item.cantidad || 1), 0);
-            document.getElementById('cart-count').textContent = count;
-        }
-        function renderCart() {
-            const carrito = getCarrito();
-            const cartItemsDiv = document.getElementById('cart-items');
-            const cartTotalDiv = document.getElementById('cart-total');
-            if (carrito.length === 0) {
-                cartItemsDiv.innerHTML = '<div class="cart-empty">El carrito está vacío.</div>';
-                cartTotalDiv.textContent = '';
-                return;
-            }
-            let total = 0;
-            cartItemsDiv.innerHTML = carrito.map(item => {
-                let desc = '';
-                if (item.ingredientes && item.ingredientes.length > 0) {
-                    desc = 'Ingredientes: ' + item.ingredientes.join(', ');
-                } else if (item.detalles) {
-                    if (item.detalles.refrescos) desc += 'Refrescos: ' + item.detalles.refrescos.join(', ') + '. ';
-                    if (item.detalles.soda) desc += 'Soda: ' + item.detalles.soda + '. ';
-                    if (item.detalles.jugos) desc += 'Jugos: ' + item.detalles.jugos.join(', ') + '. ';
-                    if (item.detalles.presentacion) desc += 'Presentación: ' + item.detalles.presentacion + '. ';
-                    if (Array.isArray(item.detalles)) desc += item.detalles.join(', ');
-                }
-                const subtotal = (item.precio * (item.cantidad || 1));
-                total += subtotal;
-                return `
-                    <div class="cart-item">
-                        <div class="cart-item-title">${item.nombre} <span style="float:right;">x${item.cantidad || 1}</span></div>
-                        <div class="cart-item-desc">${desc}</div>
-                        <div class="cart-item-price">$${subtotal.toFixed(2)}</div>
-                    </div>
-                `;
-            }).join('');
-            cartTotalDiv.textContent = `Total: $${total.toFixed(2)}`;
-        }
-        function openCart() {
-            document.getElementById('cart-modal').style.display = 'block';
-            renderCart();
-        }
-        function closeCart() {
-            document.getElementById('cart-modal').style.display = 'none';
-        }
-        function clearCart() {
-            localStorage.removeItem('carrito');
-            renderCart();
-            updateCartCount();
-        }
+        const subtotal = (item.price || item.precio) * (item.qty || item.cantidad || 1);
+        total += subtotal;
+        return `
+            <div class="cart-item">
+                <div class="cart-item-title">${item.title || item.nombre} <span style="float:right;">x${item.qty || item.cantidad || 1}</span></div>
+                <div class="cart-item-desc">${desc}</div>
+                <div class="cart-item-price">$${subtotal.toFixed(2)}</div>
+            </div>
+        `;
+    }).join('');
+    cartTotalDiv.textContent = `Total: $${total.toFixed(2)}`;
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+// Agrega productos al carrito y suma si ya existe (bebidas, comida, etc.)
+function addToCart(title, desc, price, qty, ingredientes, detalles) {
+    qty = parseInt(qty);
+    if (!qty || qty <= 0) return;
+    // Busca por nombre, descripción, ingredientes y detalles para evitar duplicados
+    const idx = cart.findIndex(item =>
+        (item.title || item.nombre) === title &&
+        item.desc === desc &&
+        (item.price || item.precio) === price &&
+        JSON.stringify(item.ingredientes || []) === JSON.stringify(ingredientes || []) &&
+        JSON.stringify(item.detalles || {}) === JSON.stringify(detalles || {})
+    );
+    if (idx >= 0) {
+        cart[idx].qty = (cart[idx].qty || cart[idx].cantidad || 1) + qty;
+    } else {
+        cart.push({ title, desc, price, qty, ingredientes, detalles });
+    }
+    updateCartCount();
+    renderCart();
+}
+
+// Limpia el carrito y localStorage
+function clearCart() {
+    cart = [];
+    updateCartCount();
+    renderCart();
+    localStorage.removeItem('cart');
+}
+
+// Al abrir el carrito, renderiza el contenido actualizado
+function openCart() {
+    document.getElementById('cart-modal').style.display = 'block';
+    renderCart();
+}
+
+// Al cerrar el carrito, guarda el estado
+function closeCart() {
+    document.getElementById('cart-modal').style.display = 'none';
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+// Al cargar la página, recupera el carrito de localStorage y actualiza el contador
+document.addEventListener('DOMContentLoaded', function() {
+    cart = JSON.parse(localStorage.getItem('cart')) || [];
+    updateCartCount();
+});
 
         // Agregar Café al carrito
         function agregarCafeAlCarrito(event) {
@@ -598,7 +635,7 @@
             document.querySelectorAll('#form-cafe input[name="ingredientes"]:checked').forEach(item => {
                 ingredientes.push(item.value);
             });
-            agregarAlCarrito('Café', 30.00, cantidad, ingredientes);
+            addToCart('Café', '', 30.00, cantidad, ingredientes, {});
             cerrarFormulario('form-cafe');
             updateCartCount();
             renderCart();
@@ -613,7 +650,8 @@
                 refrescos.push(item.value);
             });
             const soda = document.querySelector('#form-refrescos input[name="soda"]:checked')?.value || '';
-            agregarAlCarrito('Refrescos', calcularPrecioRefrescos(refrescos, soda), cantidad, { refrescos, soda });
+            const precio = calcularPrecioRefrescos(refrescos, soda);
+            addToCart('Refrescos', '', precio, cantidad, [], { refrescos, soda });
             cerrarFormulario('form-refrescos');
             updateCartCount();
             renderCart();
@@ -628,7 +666,8 @@
                 jugos.push(item.value);
             });
             const presentacion = document.querySelector('#form-jugos input[name="presentacion"]:checked')?.value || '';
-            agregarAlCarrito('Jugos', calcularPrecioJugos(jugos, presentacion), cantidad, { jugos, presentacion });
+            const precio = calcularPrecioJugos(jugos, presentacion);
+            addToCart('Jugos', '', precio, cantidad, [], { jugos, presentacion });
             cerrarFormulario('form-jugos');
             updateCartCount();
             renderCart();
@@ -642,7 +681,8 @@
             document.querySelectorAll('#form-agua input[name="bebidas"]:checked').forEach(item => {
                 aguas.push(item.value);
             });
-            agregarAlCarrito('Agua', calcularPrecioAgua(aguas), cantidad, aguas);
+            const precio = calcularPrecioAgua(aguas);
+            addToCart('Agua', '', precio, cantidad, aguas, {});
             cerrarFormulario('form-agua');
             updateCartCount();
             renderCart();

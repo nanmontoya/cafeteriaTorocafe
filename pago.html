@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmación de Pago - ToroCafe</title>
-    <link rel="stylesheet" href="styles.css">
+   
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -134,7 +134,7 @@
                 <div id="qr-container" style="display:none; flex-direction:column; align-items:center; margin-top:18px;">
                     <canvas id="qr-code"></canvas>
                     <img id="qr-img" alt="Código QR" style="margin-top:12px; display:none; width:160px; height:160px; border-radius:12px; box-shadow:0 2px 8px rgba(60,60,60,0.10);" />
-                    <div style="margin-top:10px; color:#388e3c; font-weight:600;">¡Pago exitoso! Escanea tu QR para recoger tu pedido.</div>
+                    <div style="margin-top:10px, color:#388e3c, font-weight:600;">¡Pago exitoso! Escanea tu QR para recoger tu pedido.</div>
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:22px;">
                     
@@ -172,7 +172,8 @@
             <h2 style="color:#388e3c; margin-bottom:18px;">¿Confirmar pedido?</h2>
             <div id="confirmar-total" style="color:#222; font-size:1.1rem; margin-bottom:18px;"></div>
             <div style="display:flex; gap:16px; justify-content:center;">
-                <button id="btn-confirmar-pedido" style="background:#4CAF50;color:#fff;border:none;border-radius:8px;padding:8px 32px;font-size:1rem;font-weight:500;cursor:pointer;">Confirmar</button>
+                <button type="button" onclick="confirmarPagoEfectivoYRedirigir()" style="background:#4CAF50;color:#fff;border:none;border-radius:8px;padding:8px 32px;font-size:1rem;font-weight:500;cursor:pointer;">Listo</button>
+            </div>
                 <button id="btn-cancelar-pedido" style="background:#e53935;color:#fff;border:none;border-radius:8px;padding:8px 32px;font-size:1rem;font-weight:500;cursor:pointer;">Cancelar</button>
             </div>
         </div>
@@ -195,7 +196,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script>
-        // Configuración de Firebase (ajusta si es necesario)
+        // Configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDk8V1gmkMYQkvMfyHluRLRm-z6AcWapf4",
             authDomain: "torocafe-78491.firebaseapp.com",
@@ -225,15 +226,15 @@
             });
         }
 
-        // Guardar pedido en Firestore, obteniendo el nombre real del usuario desde la colección usuarios
+        // Guardar pedido en Firestore
         async function guardarPedido(metodoPago) {
-            const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-            const total = carrito.reduce((acc, item) => acc + (item.precio * (item.cantidad || 1)), 0);
+            const carrito = JSON.parse(localStorage.getItem('cart')) || [];
+            const total = carrito.reduce((acc, item) => acc + ((item.price || item.precio) * (item.cantidad || item.qty || 1)), 0);
             const descripcion = carrito.map(item => `${item.nombre || item.title} (${item.cantidad || item.qty || 1})`).join(', ');
             const numeroPedido = await obtenerSiguienteNumeroPedido();
 
             // Obtener el username del usuario que inició sesión desde localStorage
-            let usuario = localStorage.getItem('usuario');
+            let usuario = localStorage.getItem('username') || localStorage.getItem('usuario');
             let username = '';
             if (usuario) {
                 try {
@@ -245,15 +246,13 @@
             }
 
             // Consultar la colección de usuarios para obtener el nombre real
-            let nombreUsuario = '';
+            let nombreUsuario = username;
             if (username) {
                 try {
                     const querySnapshot = await db.collection('usuarios').where('username', '==', username).limit(1).get();
                     if (!querySnapshot.empty) {
                         const userData = querySnapshot.docs[0].data();
                         nombreUsuario = userData.nombre || userData.username || username;
-                    } else {
-                        nombreUsuario = username;
                     }
                 } catch (e) {
                     nombreUsuario = username;
@@ -268,40 +267,13 @@
                 estado: "pendiente",
                 metodoPago: metodoPago,
                 total: total,
-                usuario: nombreUsuario // Guarda el nombre real del usuario
+                usuario: nombreUsuario
             };
             await db.collection("pedidos").add(pedido);
-            return {numeroPedido, total, descripcion, carrito, nombreUsuario};
+            return {numeroPedido, total, descripcion, carrito, username: nombreUsuario};
         }
 
-        // Mostrar modal de confirmación antes de guardar
-        function mostrarModalConfirmarPedido(total) {
-            document.getElementById('modal-confirmar-pedido').style.display = 'flex';
-            document.getElementById('confirmar-total').textContent = 'Total a pagar: $' + total.toFixed(2);
-        }
-        function cerrarModalConfirmarPedido() {
-            document.getElementById('modal-confirmar-pedido').style.display = 'none';
-        }
-
-        // Mostrar modal de QR y número de pedido
-        function mostrarModalPedidoEnviado(numeroPedido) {
-            document.getElementById('modal-pedido-enviado').style.display = 'flex';
-            document.getElementById('pedido-numero').textContent = 'Número de pedido: #' + numeroPedido;
-            // Genera QR
-            const qr = new QRious({
-                value: "PEDIDO #" + numeroPedido,
-                size: 160,
-                background: '#fff',
-                foreground: '#388e3c'
-            });
-            document.getElementById('qr-img-pedido').src = qr.toDataURL("image/png");
-        }
-        function finalizarPedidoEnviado() {
-            localStorage.removeItem('carrito');
-            window.location.href = 'index.html';
-        }
-
-        // Mostrar modal de tarjeta y manejar el flujo de pago con tarjeta
+        // Mostrar modal de tarjeta
         function mostrarModalTarjeta() {
             document.getElementById('modal-tarjeta').style.display = 'flex';
             document.getElementById('qr-container').style.display = 'none';
@@ -314,14 +286,42 @@
             document.getElementById('qr-img').style.display = 'none';
         }
 
-        function mostrarModalEfectivo(total) {
+        // Mostrar modal de efectivo con información del carrito y total
+        function mostrarModalEfectivoConCarrito(carrito, total, numeroPedido) {
             document.getElementById('modal-efectivo').style.display = 'flex';
+
+            // Mostrar el número de pedido arriba del total
+            let pedidoNumDiv = document.getElementById('efectivo-numero-pedido');
+            if (!pedidoNumDiv) {
+                pedidoNumDiv = document.createElement('div');
+                pedidoNumDiv.id = 'efectivo-numero-pedido';
+                pedidoNumDiv.style = "font-size:1.1rem; color:#222; margin-bottom:8px; font-weight:bold;";
+                document.getElementById('efectivo-total').insertAdjacentElement('beforebegin', pedidoNumDiv);
+            }
+            pedidoNumDiv.textContent = `Número de pedido: #${numeroPedido}`;
+
             document.getElementById('efectivo-total').textContent = 'Total a pagar: $' + total.toFixed(2);
+
+            // Mostrar carrito detallado
+            let carritoHtml = '<ul style="margin:6px 0 0 0; padding-left:18px;">' +
+                carrito.map(item =>
+                    `<li>${item.nombre || item.title || 'Producto'} (${item.cantidad || item.qty || 1}) - $${item.price ? item.price.toFixed(2) : '0.00'}</li>`
+                ).join('') +
+                '</ul>';
+
+            // Si no existe, crea el contenedor para el carrito
+            let carritoDiv = document.getElementById('efectivo-carrito');
+            if (!carritoDiv) {
+                carritoDiv = document.createElement('div');
+                carritoDiv.id = 'efectivo-carrito';
+                document.getElementById('modal-efectivo').querySelector('div[style*="color:#555"]').insertAdjacentElement('afterend', carritoDiv);
+            }
+            carritoDiv.innerHTML = `<div style="margin-bottom:10px;"><b>Carrito:</b> ${carritoHtml}</div>`;
+
+            // QR
             document.getElementById('qr-img-efectivo').style.display = 'none';
             document.getElementById('qr-code-efectivo').style.display = 'block';
-            // Genera código de pedido
-            const codigoPedido = 'TORO-' + Math.floor(Math.random()*90000+10000);
-            // Genera QR en canvas
+            const codigoPedido = 'TORO-' + numeroPedido;
             const qr = new QRious({
                 element: document.getElementById('qr-code-efectivo'),
                 value: codigoPedido,
@@ -329,7 +329,6 @@
                 background: '#fff',
                 foreground: '#388e3c'
             });
-            // Convierte canvas a imagen y la muestra
             setTimeout(() => {
                 const canvas = document.getElementById('qr-code-efectivo');
                 const img = document.getElementById('qr-img-efectivo');
@@ -339,109 +338,93 @@
             }, 300);
         }
 
-        function finalizarPagoEfectivo() {
-            localStorage.removeItem('carrito');
-            window.location.href = 'index.html';
-        }
-
-        // Calcula el total del carrito
-        function obtenerTotalCarrito() {
-            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-            return carrito.reduce((acc, item) => acc + (item.precio * (item.cantidad || 1)), 0);
-        }
-
-        // Modifica el submit del formulario de tarjeta
-        document.getElementById('form-tarjeta').onsubmit = function(e) {
-            e.preventDefault();
-            const codigoPedido = 'TORO-' + Math.floor(Math.random()*90000+10000);
-            const total = obtenerTotalCarrito();
-
-            // Genera el QR en canvas (oculto)
-            const qr = new QRious({
-                value: codigoPedido,
-                size: 160,
-                background: '#fff',
-                foreground: '#388e3c'
-            });
-
-            // Muestra el modal de confirmación con total y QR
-            document.getElementById('modal-tarjeta').style.display = 'none';
-            document.getElementById('modal-confirmacion-tarjeta').style.display = 'flex';
-            document.getElementById('total-tarjeta').textContent = 'Total pagado: $' + total.toFixed(2);
-
-            // Pone el QR como imagen
-            document.getElementById('qr-img-confirmacion').src = qr.toDataURL("image/png");
-
-            // Limpia el carrito al mostrar el QR
-            localStorage.removeItem('carrito');
-        };
-
-        function finalizarPagoTarjeta() {
-            window.location.href = 'index.html';
-        }
-
-        // Intercepta el flujo de pago para mostrar la confirmación o el formulario de tarjeta
-        function realizarPago() {
-            const metodoPago = document.querySelector('input[name="metodo_pago"]:checked').value;
-            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-            let total = carrito.reduce((acc, item) => acc + (item.precio * (item.cantidad || 1)), 0);
-
-            if (metodoPago === 'tarjeta') {
-                mostrarModalTarjeta();
-                // Manejar el submit del formulario de tarjeta
-                document.getElementById('form-tarjeta').onsubmit = async function(e) {
-                    e.preventDefault();
-                    document.getElementById('btn-pagar-tarjeta').disabled = true;
-
-                    // Guardar el pedido en Firestore
-                    const {numeroPedido, total, descripcion, carrito, nombreUsuario} = await guardarPedido('tarjeta');
-
-                    // Cerrar modal de tarjeta y mostrar confirmación
-                    cerrarModalTarjeta();
-                    mostrarModalConfirmarPedidoTarjeta(numeroPedido, total, descripcion, carrito, nombreUsuario);
-                };
-            } else {
-                mostrarModalConfirmarPedido(total);
-
-                // Botón cancelar
-                document.getElementById('btn-cancelar-pedido').onclick = function() {
-                    cerrarModalConfirmarPedido();
-                };
-
-                // Botón confirmar
-                document.getElementById('btn-confirmar-pedido').onclick = async function() {
-                    cerrarModalConfirmarPedido();
-                    // Guarda el pedido y muestra QR y número
-                    const {numeroPedido} = await guardarPedido(metodoPago);
-                    mostrarModalPedidoEnviado(numeroPedido);
-                };
-            }
-        }
-
-        // Modal de confirmación para tarjeta (muestra número de pedido, descripción, carrito y total)
-        function mostrarModalConfirmarPedidoTarjeta(numeroPedido, total, descripcion, carrito, nombreUsuario) {
-            // Puedes reutilizar el modal-pedido-enviado para mostrar la info
+        // Modal de confirmación para tarjeta
+        function mostrarModalConfirmarPedidoTarjeta(numeroPedido, total, descripcion, carrito, username) {
             document.getElementById('modal-pedido-enviado').style.display = 'flex';
             document.getElementById('pedido-numero').innerHTML =
                 `<b>Número de pedido:</b> #${numeroPedido}<br>
-                <b>Usuario:</b> ${nombreUsuario}<br>
+                <b>Usuario:</b> ${username}<br>
                 <b>Descripción:</b> ${descripcion}<br>
                 <b>Total:</b> $${total.toFixed(2)}<br>
-                <b>Carrito:</b> <ul style="margin:6px 0 0 0; padding-left:18px;">${
-                    carrito.map(item =>
-                        `<li>${item.nombre || item.title || 'Producto'} (${item.cantidad || item.qty || 1}) - $${item.precio ? item.precio.toFixed(2) : '0.00'}</li>`
-                    ).join('')
-                }</ul>`;
+                <b>Carrito:</b> <ul style="margin:6px 0 0 0; padding-left:18px;">
+                    ${carrito.map(item => `<li>${item.nombre || item.title} x${item.cantidad || item.qty || 1} - $${(item.price || item.precio).toFixed(2)}</li>`).join('')}
+                </ul>`;
 
-            // Genera QR
-            const qr = new QRious({
-                value: "PEDIDO #" + numeroPedido,
-                size: 160,
-                background: '#fff',
-                foreground: '#388e3c'
-            });
-            document.getElementById('qr-img-pedido').src = qr.toDataURL("image/png");
+            // Genera el QR con el número de pedido
+            const qrImg = document.getElementById('qr-img-pedido');
+            if (qrImg) {
+                const qr = new QRious({
+                    value: "PEDIDO #" + numeroPedido,
+                    size: 160,
+                    background: '#fff',
+                    foreground: '#388e3c'
+                });
+                qrImg.src = qr.toDataURL("image/png");
+                qrImg.style.display = 'block';
+            }
         }
+
+        // Finalizar pago efectivo
+        function finalizarPagoEfectivo() {
+            localStorage.removeItem('cart');
+            window.location.href = 'index.html';
+        }
+        // Finalizar pago tarjeta
+        function finalizarPagoTarjeta() {
+            localStorage.removeItem('cart');
+            window.location.href = 'menu.html';
+        }
+        // Finalizar pedido enviado (limpia carrito y redirige a inicio)
+        function finalizarPedidoEnviado() {
+            localStorage.removeItem('cart');
+            window.location.href = 'index.html';
+        }
+
+        // Flujo principal de pago
+        function realizarPago() {
+            const metodoPago = document.querySelector('input[name="metodo_pago"]:checked')?.value;
+            const carrito = JSON.parse(localStorage.getItem('cart')) || [];
+            const total = carrito.reduce((acc, item) => acc + ((item.price || item.precio) * (item.cantidad || item.qty || 1)), 0);
+
+            if (!metodoPago) {
+                alert("Selecciona un método de pago.");
+                return;
+            }
+            if (carrito.length === 0) {
+                alert("El carrito está vacío.");
+                return;
+            }
+
+            if (metodoPago === 'tarjeta') {
+                mostrarModalTarjeta();
+                document.getElementById('form-tarjeta').onsubmit = async function(e) {
+                    e.preventDefault();
+                    document.getElementById('btn-pagar-tarjeta').disabled = true;
+                    const {numeroPedido, total, descripcion, carrito, username} = await guardarPedido('tarjeta');
+                    cerrarModalTarjeta();
+                    mostrarModalConfirmarPedidoTarjeta(numeroPedido, total, descripcion, carrito, username);
+                };
+            } else if (metodoPago === 'efectivo') {
+                // Primero guarda el pedido y luego muestra el modal con el número real
+                guardarPedido('efectivo').then(({numeroPedido}) => {
+                    const carrito = JSON.parse(localStorage.getItem('cart')) || [];
+                    const total = carrito.reduce((acc, item) => acc + ((item.price || item.precio) * (item.cantidad || item.qty || 1)), 0);
+                    mostrarModalEfectivoConCarrito(carrito, total, numeroPedido);
+
+                    const btnListo = document.querySelector('#modal-efectivo button[type="button"]');
+                    btnListo.textContent = "Confirmar";
+                    btnListo.onclick = function() {
+                        localStorage.removeItem('cart');
+                        window.location.href = 'index.html';
+                    };
+                });
+            }
+        }
+
+        // Exponer función al HTML
+        window.realizarPago = realizarPago;
+        window.finalizarPagoEfectivo = finalizarPagoEfectivo;
+        window.finalizarPagoTarjeta = finalizarPagoTarjeta;
     </script>
 </body>
 </html>

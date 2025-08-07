@@ -256,8 +256,7 @@
         <nav>
             <ul class="nav-links">
                 <li><a href="index.html">Inicio</a></li>
-                <li><a href="menu.html">Menú</a></li>
-                <li><a href="promociones.html">Promociones</a></li>
+                
                 <li><a href="historial.html">Historial</a></li>
             </ul>
         </nav>
@@ -267,97 +266,7 @@
     <div class="content">
         <h1>Panel de Atención - Torocafé</h1>
         <div class="pedidos-grid">
-            <!-- Ejemplo de pedidos pendientes -->
-            <div class="pedido" data-usuario="Estudiante" data-fecha="2024-06-25" data-items='[
-                {"nombre": "Hamburguesa de pollo", "precio": 50, "cantidad": 2},
-                {"nombre": "Coca-cola 600ml", "precio": 20, "cantidad": 1},
-                {"nombre": "Gomitas pandita", "precio": 10, "cantidad": 1}
-            ]'>
-                <h3>Pedido #MGYONG</h3>
-                <p><strong>Cliente:</strong> Nancy Montoya</p>
-                <p><strong>Usuario:</strong> Estudiante</p>
-                <p><strong>Fecha:</strong> 2024-06-25</p>
-                <p><strong>Ítems:</strong> Hamburguesa de pollo (2), Coca-cola 600ml (1), Gomitas pandita (1)</p>
-                <p><strong>Estado:</strong><span class="estado-pendiente">Pendiente</span></p>
-                <p><strong>Total:</strong> <u class="total">$140.00</u></p>
-                <p><strong>Pago:</strong> Efectivo</p>
-                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
-            </div>
-
-            <div class="pedido" data-usuario="Maestro" data-fecha="2024-06-25" data-items='[
-                {"nombre": "Cafe Vainilla", "precio": 30, "cantidad": 1},
-                {"nombre": "Burrito Discada", "precio": 45, "cantidad": 1}
-            ]'>
-                <h3>Pedido #OMXSQR</h3>
-                <p><strong>Cliente:</strong> Zacarias Lesso</p>
-                <p><strong>Usuario:</strong><span class="estado-Maestro">Maestro</span></p>
-                <p><strong>Fecha:</strong> 2024-06-25</p>
-                <p><strong>Ítems:</strong> Cafe Vainilla (1), Burrito Discada (1)</p>
-                <p><strong>Estado:</strong> <span class="estado-pendiente">Pendiente</span></p>
-                <p><strong>Total:</strong> <u class="total">$75.00</u></p>
-                <p><strong>Pago:</strong> Transferencia</p>
-                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
-            </div>
-
-            <div class="pedido" data-usuario="Estudiante" data-fecha="2024-06-24" data-items='[
-                {"nombre": "Sprite 600ml", "precio": 20, "cantidad": 1},
-                {"nombre": "Ensalada", "precio": 60, "cantidad": 1}
-            ]'>
-                <h3>Pedido #OYNVNH</h3>
-                <p><strong>Cliente:</strong> Karina Sanchez</p>
-                <p><strong>Usuario:</strong> Estudiante</p>
-                <p><strong>Fecha:</strong> 2024-06-24</p>
-                <p><strong>Ítems:</strong> Sprite 600ml (1), Ensalada (1)</p>
-                <p><strong>Estado:</strong> <span class="estado-pendiente">Pendiente</span></p>
-                <p><strong>Total:</strong> <u class="total">$80.00</u></p>
-                <p><strong>Pago:</strong> Transferencia</p>
-                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
-            </div>
-
-            <div class="pedido" data-usuario="Estudiante" data-fecha="2024-06-24" data-items='[
-                {"nombre": "Pizza", "precio": 25, "cantidad": 2},
-                {"nombre": "Jugo de Naranja", "precio": 25, "cantidad": 1}
-            ]'>
-                <h3>Pedido #ABCDOP</h3>
-                <p><strong>Cliente:</strong> Kenia Olivas</p>
-                <p><strong>Usuario:</strong> Estudiante</p>
-                <p><strong>Fecha:</strong> 2024-06-24</p>
-                <p><strong>Ítems:</strong> Pizza (2), Jugo de Naranja (1)</p>
-                <p><strong>Estado:</strong> <span class="estado-pendiente">Pendiente</span></p>
-                <p><strong>Total:</strong> <u class="total">$75.00</u></p>
-                <p><strong>Pago:</strong> Efectivo</p>
-                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
-            </div>
-
-            <div class="pedido" data-usuario="Maestro" data-fecha="2024-06-23" data-items='[
-                {"nombre": "Boneless ", "precio": 60, "cantidad": 1},
-                {"nombre": "Agua Mineral", "precio": 25, "cantidad": 1}
-            ]'>
-                <h3>Pedido #EFGHUI</h3>
-                <p><strong>Cliente:</strong> Alejandro Solis</p>
-                <p><strong>Usuario:</strong> <span class="estado-Maestro">Maestro</span></p>
-                <p><strong>Fecha:</strong> 2024-06-23</p>
-                <p><strong>Ítems:</strong> Boneless (1), Agua Mineral (1)</p>
-                <p><strong>Estado:</strong> <span class="estado-pendiente">Pendiente</span></p>
-                <p><strong>Total:</strong> <u class="total">$85.00</u></p>
-                <p><strong>Pago:</strong> Transferencia</p>
-                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
-            </div>
-
-            <div class="pedido" data-usuario="Estudiante" data-fecha="2024-06-22" data-items='[
-                {"nombre": "Taco de carne", "precio": 40, "cantidad": 3},
-                {"nombre": "Fanta 500ml", "precio": 15, "cantidad": 1}
-            ]'>
-                <h3>Pedido #XYZABC</h3>
-                <p><strong>Cliente:</strong> Luis Perez</p>
-                <p><strong>Usuario:</strong> Estudiante</p>
-                <p><strong>Fecha:</strong> 2024-06-22</p>
-                <p><strong>Ítems:</strong> Taco de carne (3), Fanta 500ml (1)</p>
-                <p><strong>Estado:</strong> <span class="estado-pendiente">Pendiente</span></p>
-                <p><strong>Total:</strong> <u class="total">$135.00</u></p>
-                <p><strong>Pago:</strong> Efectivo</p>
-                <button class="btn"><i class="fa fa-check"></i> Marcar como Completado</button>
-            </div>
+            <!-- Aquí se mostrarán automáticamente los pedidos pendientes de la base de datos -->
         </div>
     </div>
 
@@ -365,20 +274,12 @@
         <img src="piepagina.jpeg" class="footer-img" alt="Pie de página"/>
     </footer>
 
-    <script>
-        // Script para manejar eventos de botones (simulado)
-        const buttons = document.querySelectorAll('.btn');
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                button.parentNode.style.display = 'none'; // Simula marcar como completado 
-            });
-        });
-    </script>
-    <!-- Agrega este script antes del cierre de </body> -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
     <script>
-        // Configuración de Firebase (ajusta si es necesario)
+        // Configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDk8V1gmkMYQkvMfyHluRLRm-z6AcWapf4",
             authDomain: "torocafe-78491.firebaseapp.com",
@@ -393,10 +294,12 @@
         }
         const db = firebase.firestore();
 
-        // Función para renderizar los pedidos
+      
+        // Función para mostrar los pedidos
         function renderPedidos(pedidos) {
             const grid = document.querySelector('.pedidos-grid');
             grid.innerHTML = '';
+
             pedidos.forEach(doc => {
                 const pedido = doc.data();
                 const id = doc.id;
@@ -409,7 +312,7 @@
                 const fecha = pedido.fecha && pedido.fecha.toDate ? pedido.fecha.toDate() : new Date();
                 const fechaStr = fecha.toLocaleDateString() + ' ' + fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-                // Mostrar descripción y carrito
+                // Lista de productos
                 let carritoHtml = '';
                 if (Array.isArray(pedido.carrito)) {
                     carritoHtml = '<ul style="margin:6px 0 0 0; padding-left:18px;">' +
@@ -420,33 +323,59 @@
                 }
 
                 grid.innerHTML += `
-                    <div class="pedido" data-id="${id}">
-                        <h3>Pedido #${pedido.numeroPedido || ''}</h3>
+                    <div class="pedido" data-id="${id}" style="border:1px solid #ccc; border-radius:8px; padding:12px; margin-bottom:12px;">
+                        <h3>Pedido #${pedido.numeroPedido || id}</h3>
+                        <p><strong>Usuario:</strong> ${pedido.username || '---'}</p>
                         <p><strong>Fecha:</strong> ${fechaStr}</p>
-                        <p><strong>Estado:</strong> <span class="estado-pendiente" style="background:${colorEstado};color:${colorTexto};">${estado.charAt(0).toUpperCase() + estado.slice(1)}</span></p>
-                        <p><strong>Total:</strong> <u class="total">$${pedido.total ? pedido.total.toFixed(2) : '0.00'}</u></p>
+                        <p><strong>Estado:</strong> 
+                            <span class="estado-pendiente" style="padding:4px 8px; border-radius:5px; background:${colorEstado};color:${colorTexto};">
+                                ${estado.charAt(0).toUpperCase() + estado.slice(1)}
+                            </span>
+                        </p>
+                        <p><strong>Total:</strong> $${pedido.total ? pedido.total.toFixed(2) : '0.00'}</p>
                         <p><strong>Método de pago:</strong> ${pedido.metodoPago || '---'}</p>
-                        <p><strong>Descripción:</strong> ${pedido.descripcion || ''}</p>
-                        <p><strong>Carrito:</strong>${carritoHtml}</p>
-                        <button class="btn btn-entregar" style="${btnBg}" ${btnDisabled}><i class="fa fa-check"></i> ${btnText}</button>
+                        <p><strong>Descripción:</strong> ${pedido.descripcion || '---'}</p>
+                        <p><strong>Carrito:</strong> ${carritoHtml}</p>
+                        <button class="btn btn-entregar" style="${btnBg}; padding:6px 12px; border:none; border-radius:4px; cursor:pointer;" ${btnDisabled}>
+                            ${btnText}
+                        </button>
                     </div>
                 `;
             });
 
-            // Agrega evento a los botones de entregar
-            document.querySelectorAll('.btn-entregar').forEach(btn => {
-                btn.onclick = async function() {
-                    const card = btn.closest('.pedido');
-                    const id = card.getAttribute('data-id');
-                    await db.collection('pedidos').doc(id).update({estado: 'entregado'});
-                };
-            });
+          
         }
 
-        // Escucha en tiempo real los pedidos ordenados por fecha descendente
-        db.collection('pedidos').orderBy('fecha', 'desc').onSnapshot(snapshot => {
-            renderPedidos(snapshot.docs);
-        });
+        // Escucha cambios en tiempo real
+        db.collection('pedidos')
+            .where('estado', '==', 'pendiente')
+            //.orderBy('fecha', 'asc')
+            .onSnapshot(snapshot => {
+                console.log('Pedidos actualizados');
+                renderPedidos(snapshot.docs);
+            });
+
+        // Escucha botones
+document.querySelectorAll('.btn-entregar').forEach(btn => {
+    btn.onclick = async function () {
+        const card = btn.closest('.pedido');
+        const id = card.getAttribute('data-id');
+
+        try {
+            await db.collection('pedidos').doc(id).update({ estado: 'entregado' });
+            console.log(`Pedido ${id} marcado como entregado`);
+
+            // Eliminar de la vista
+            card.remove();
+        } catch (error) {
+            console.error('Error al actualizar el pedido:', error);
+        }
+
+        
+    };
+});
+
     </script>
 </body>
 </html>
+

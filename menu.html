@@ -426,68 +426,130 @@
     </div>
 
     <script>
-        // Carrito de compras
-        function getCarrito() {
-            return JSON.parse(localStorage.getItem('carrito')) || [];
-        }
-        function setCarrito(carrito) {
-            localStorage.setItem('carrito', JSON.stringify(carrito));
-        }
+        // --- Carrito de compras global ---
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        // Actualiza el contador del carrito
         function updateCartCount() {
-            const carrito = getCarrito();
-            const count = carrito.reduce((acc, item) => acc + (item.cantidad || 1), 0);
-            document.getElementById('cart-count').textContent = count;
+            document.getElementById('cart-count').textContent = cart.reduce((acc, item) => acc + (item.qty || 1), 0);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            guardarCarritoEnBD();
         }
+
+        // Renderiza el carrito en el modal
         function renderCart() {
-            const carrito = getCarrito();
             const cartItemsDiv = document.getElementById('cart-items');
             const cartTotalDiv = document.getElementById('cart-total');
-            if (carrito.length === 0) {
+            if (cart.length === 0) {
                 cartItemsDiv.innerHTML = '<div class="cart-empty">El carrito está vacío.</div>';
                 cartTotalDiv.textContent = '';
+                guardarCarritoEnBD(); // Guarda vacío
                 return;
             }
             let total = 0;
-            cartItemsDiv.innerHTML = carrito.map(item => {
-                let desc = '';
-                if (item.ingredientes && item.ingredientes.length > 0) {
+            cartItemsDiv.innerHTML = cart.map(item => {
+                let desc = item.desc || '';
+                if (!desc && item.ingredientes && item.ingredientes.length > 0) {
                     desc = 'Ingredientes: ' + item.ingredientes.join(', ');
-                } else if (item.detalles) {
+                } else if (!desc && item.detalles) {
                     if (item.detalles.refrescos) desc += 'Refrescos: ' + item.detalles.refrescos.join(', ') + '. ';
                     if (item.detalles.soda) desc += 'Soda: ' + item.detalles.soda + '. ';
                     if (item.detalles.jugos) desc += 'Jugos: ' + item.detalles.jugos.join(', ') + '. ';
                     if (item.detalles.presentacion) desc += 'Presentación: ' + item.detalles.presentacion + '. ';
                     if (Array.isArray(item.detalles)) desc += item.detalles.join(', ');
-                } else if (item.opciones && item.opciones.length > 0) {
+                } else if (!desc && item.opciones && item.opciones.length > 0) {
                     desc = 'Opciones: ' + item.opciones.join(', ');
                 }
-                const subtotal = (item.precio * (item.cantidad || 1));
+                const subtotal = (item.price * (item.qty || 1));
                 total += subtotal;
                 return `
                     <div class="cart-item">
-                        <div class="cart-item-title">${item.nombre} <span style="float:right;">x${item.cantidad || 1}</span></div>
+                        <div class="cart-item-title">${item.title || item.nombre} <span style="float:right;">x${item.qty || 1}</span></div>
                         <div class="cart-item-desc">${desc}</div>
                         <div class="cart-item-price">$${subtotal.toFixed(2)}</div>
                     </div>
                 `;
             }).join('');
             cartTotalDiv.textContent = `Total: $${total.toFixed(2)}`;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            guardarCarritoEnBD();
         }
+
+        // Agrega productos al carrito y suma si ya existe (comida, ensaladas, bebidas, etc.)
+        function addToCart(title, desc, price, qty, ingredientes, detalles, opciones) {
+            qty = parseInt(qty);
+            if (!qty || qty <= 0) return;
+            // Busca por nombre, descripción y precio para evitar duplicados
+            const idx = cart.findIndex(item =>
+                item.title === title &&
+                item.desc === desc &&
+                item.price === price &&
+                JSON.stringify(item.ingredientes || []) === JSON.stringify(ingredientes || []) &&
+                JSON.stringify(item.detalles || {}) === JSON.stringify(detalles || {}) &&
+                JSON.stringify(item.opciones || []) === JSON.stringify(opciones || [])
+            );
+            if (idx >= 0) {
+                cart[idx].qty += qty;
+            } else {
+                cart.push({ title, desc, price, qty, ingredientes, detalles, opciones });
+            }
+            updateCartCount();
+            renderCart();
+        }
+
+        // Limpia el carrito y localStorage
+        async function clearCart() {
+            cart = [];
+            updateCartCount();
+            renderCart();
+            localStorage.removeItem('cart');
+            // Borra de la base de datos
+            if (typeof firebase !== 'undefined' && firebase.firestore) {
+                const db = firebase.firestore();
+                const usuario = localStorage.getItem('usuario') || 'invitado';
+                await db.collection('carrito').doc(usuario).delete();
+            }
+        }
+
+        // Guarda el carrito en la colección "carrito" de Firestore cada vez que se actualiza
+        async function guardarCarritoEnBD() {
+            if (typeof firebase === 'undefined' || !firebase.firestore) return;
+            const db = firebase.firestore();
+            const usuario = localStorage.getItem('usuario') || 'invitado';
+            const carritoParaGuardar = cart.map(item => ({
+                descripcion: item.title || item.nombre,
+                detalles: item.desc || '',
+                precio: item.price,
+                cantidad: item.qty || 1,
+                ingredientes: item.ingredientes || [],
+                opciones: item.opciones || [],
+                otros: item.detalles || {}
+            }));
+            const total = cart.reduce((acc, item) => acc + (item.price * (item.qty || 1)), 0);
+
+            // Guarda el carrito bajo el usuario actual (puedes cambiar el doc id si lo deseas)
+            await db.collection('carrito').doc(usuario).set({
+                productos: carritoParaGuardar,
+                total: total,
+                fecha: new Date()
+            });
+        }
+
+        // Al abrir el carrito, renderiza el contenido actualizado
         function openCart() {
             document.getElementById('cart-modal').style.display = 'block';
             renderCart();
         }
+
+        // Al cerrar el carrito, guarda el estado
         function closeCart() {
             document.getElementById('cart-modal').style.display = 'none';
-        }
-        function clearCart() {
-            localStorage.removeItem('carrito');
-            renderCart();
-            updateCartCount();
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
 
-        // Inicializar contador de carrito al cargar
+        // Al cargar la página, recupera el carrito de localStorage y actualiza el contador
         document.addEventListener('DOMContentLoaded', function() {
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
             updateCartCount();
         });
 
@@ -500,9 +562,6 @@
         }
 
         function logout() {
-            // Si usas autenticación de Firebase, puedes agregar aquí el signOut
-            // firebase.auth().signOut().then(() => { ... });
-            // Limpia cualquier dato de sesión local si aplica
             localStorage.removeItem('usuario');
             window.location.href = 'index.html';
         }

@@ -524,59 +524,95 @@
             document.getElementById(id).classList.remove('active');
         }
 
-        // Carrito de compras
-        function getCarrito() {
-            return JSON.parse(localStorage.getItem('carrito')) || [];
-        }
-        function setCarrito(carrito) {
-            localStorage.setItem('carrito', JSON.stringify(carrito));
-        }
+        // --- Carrito de compras global ---
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        // Actualiza el contador del carrito
         function updateCartCount() {
-            const carrito = getCarrito();
-            const count = carrito.reduce((acc, item) => acc + (item.cantidad || 1), 0);
-            document.getElementById('cart-count').textContent = count;
+            document.getElementById('cart-count').textContent = cart.reduce((acc, item) => acc + (item.qty || item.cantidad || 1), 0);
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
+
+        // Renderiza el carrito en el modal
         function renderCart() {
-            const carrito = getCarrito();
             const cartItemsDiv = document.getElementById('cart-items');
             const cartTotalDiv = document.getElementById('cart-total');
-            if (carrito.length === 0) {
+            if (cart.length === 0) {
                 cartItemsDiv.innerHTML = '<div class="cart-empty">El carrito está vacío.</div>';
                 cartTotalDiv.textContent = '';
                 return;
             }
             let total = 0;
-            cartItemsDiv.innerHTML = carrito.map(item => {
+            cartItemsDiv.innerHTML = cart.map(item => {
                 let desc = '';
                 if (item.opciones && item.opciones.length > 0) {
                     desc = 'Opciones: ' + item.opciones.join(', ');
                 }
-                const subtotal = (item.precio * (item.cantidad || 1));
+                if (item.ingredientes && item.ingredientes.length > 0) {
+                    desc += (desc ? ' | ' : '') + 'Ingredientes: ' + item.ingredientes.join(', ');
+                }
+                const subtotal = (item.price || item.precio) * (item.qty || item.cantidad || 1);
                 total += subtotal;
                 return `
                     <div class="cart-item">
-                        <div class="cart-item-title">${item.nombre} <span style="float:right;">x${item.cantidad || 1}</span></div>
+                        <div class="cart-item-title">${item.title || item.nombre} <span style="float:right;">x${item.qty || item.cantidad || 1}</span></div>
                         <div class="cart-item-desc">${desc}</div>
                         <div class="cart-item-price">$${subtotal.toFixed(2)}</div>
                     </div>
                 `;
             }).join('');
             cartTotalDiv.textContent = `Total: $${total.toFixed(2)}`;
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
+
+        // Agrega productos al carrito y suma si ya existe (snacks, comida, etc.)
+        function addToCart(title, desc, price, qty, opciones, ingredientes) {
+            qty = parseInt(qty);
+            if (!qty || qty <= 0) return;
+            // Busca por nombre, opciones, ingredientes y precio para evitar duplicados
+            const idx = cart.findIndex(item =>
+                (item.title || item.nombre) === title &&
+                item.desc === desc &&
+                (item.price || item.precio) === price &&
+                JSON.stringify(item.opciones || []) === JSON.stringify(opciones || []) &&
+                JSON.stringify(item.ingredientes || []) === JSON.stringify(ingredientes || [])
+            );
+            if (idx >= 0) {
+                cart[idx].qty = (cart[idx].qty || cart[idx].cantidad || 1) + qty;
+            } else {
+                cart.push({ title, desc, price, qty, opciones, ingredientes });
+            }
+            updateCartCount();
+            renderCart();
+        }
+
+        // Limpia el carrito y localStorage
+        function clearCart() {
+            cart = [];
+            updateCartCount();
+            renderCart();
+            localStorage.removeItem('cart');
+        }
+
+        // Al abrir el carrito, renderiza el contenido actualizado
         function openCart() {
             document.getElementById('cart-modal').style.display = 'block';
             renderCart();
         }
+
+        // Al cerrar el carrito, guarda el estado
         function closeCart() {
             document.getElementById('cart-modal').style.display = 'none';
-        }
-        function clearCart() {
-            localStorage.removeItem('carrito');
-            renderCart();
-            updateCartCount();
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
 
-        // Agregar snacks al carrito
+        // Al cargar la página, recupera el carrito de localStorage y actualiza el contador
+        document.addEventListener('DOMContentLoaded', function() {
+            cart = JSON.parse(localStorage.getItem('cart')) || [];
+            updateCartCount();
+        });
+
+        // --- Actualiza los formularios para usar el carrito global ---
         function agregarSnackAlCarrito(event, nombre, precio, formId) {
             event.preventDefault();
             const form = document.getElementById(formId);
@@ -588,29 +624,10 @@
                 return;
             }
 
-            let carrito = getCarrito();
-            // Si ya existe el mismo producto con las mismas opciones, suma la cantidad
-            const idx = carrito.findIndex(item =>
-                item.nombre === nombre &&
-                JSON.stringify(item.opciones) === JSON.stringify(opciones)
-            );
-            if (idx >= 0) {
-                carrito[idx].cantidad += cantidad;
-            } else {
-                carrito.push({
-                    nombre: nombre,
-                    precio: parseFloat(precio),
-                    cantidad: cantidad,
-                    opciones: opciones
-                });
-            }
-            setCarrito(carrito);
-            updateCartCount();
-            renderCart();
+            addToCart(nombre, '', parseFloat(precio), cantidad, opciones, []);
             cerrarFormulario(formId);
         }
 
-        // Dulces: suma el precio según los dulces seleccionados
         function agregarDulcesAlCarrito(event) {
             event.preventDefault();
             const form = document.getElementById('form-dulces');
@@ -627,32 +644,9 @@
                 opciones.push(input.value);
             });
             totalPrecio = totalPrecio * cantidad;
-            let carrito = getCarrito();
-            // Si ya existe el mismo producto con las mismas opciones, suma la cantidad
-            const idx = carrito.findIndex(item =>
-                item.nombre === 'Dulces' &&
-                JSON.stringify(item.opciones) === JSON.stringify(opciones)
-            );
-            if (idx >= 0) {
-                carrito[idx].cantidad += cantidad;
-            } else {
-                carrito.push({
-                    nombre: 'Dulces',
-                    precio: totalPrecio / cantidad,
-                    cantidad: cantidad,
-                    opciones: opciones
-                });
-            }
-            setCarrito(carrito);
-            updateCartCount();
-            renderCart();
+            addToCart('Dulces', '', totalPrecio / cantidad, cantidad, opciones, []);
             cerrarFormulario('form-dulces');
         }
-
-        // Inicializar contador de carrito al cargar
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCartCount();
-        });
 
         // Cerrar modal de carrito al hacer clic fuera
         window.onclick = function(event) {

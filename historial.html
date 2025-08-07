@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
     <title>Historial de Pedidos - Torocafé</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            background-color: rgb(144, 238, 144); /* Fondo claro */
+            background: linear-gradient(135deg, #c1e1c1 0%, #f8fafc 100%);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -19,11 +20,12 @@
 
         header {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra suave en la parte inferior del encabezado */
+            padding: 16px 32px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(60,60,60,0.08);
         }
 
         .logo-container {
@@ -32,13 +34,15 @@
         }
 
         .logo {
-            width: 250px; /* Tamaño ajustado del logotipo */
-            margin-right: 10px; /* Espacio entre los logotipos */
+            width: 220px;
+            max-width: 48vw;
+            margin-right: 10px;
+            transition: width 0.2s;
         }
 
         nav {
-            flex: 1; /* Ocupa todo el espacio restante */
-            text-align: center; /* Centrar elementos dentro de nav */
+            flex: 1;
+            text-align: center;
         }
 
         .nav-links {
@@ -46,120 +50,203 @@
             padding: 0;
             margin: 0;
             display: flex;
-            justify-content: center; /* Centrar elementos horizontalmente */
-        }
-
-        .nav-links li {
-            margin-left: 20px;
+            justify-content: center;
+            gap: 18px;
         }
 
         .nav-links li a {
             display: block;
-            padding: 10px 20px;
+            padding: 10px 22px;
             text-decoration: none;
-            color: #f7f3f3;
-            background-color: #0e0d0d;
-            border: 1px solid #4CAF50; /* Borde sólido verde */
-            border-radius: 4px;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+            color: #388e3c;
+            background-color: #e8f5e9;
+            border: 1.5px solid #4CAF50;
+            border-radius: 24px;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.05);
         }
 
         .nav-links li a:hover {
-            background-color: #1c7905; /* Fondo verde al pasar el mouse */
-            color:  #f7f3f3; /* Texto blanco al pasar el mouse */
-            border-color: #0b690e; /* Borde verde al pasar el mouse */
+            background: linear-gradient(90deg, #4CAF50 60%, #388e3c 100%);
+            color: #fff;
+            border-color: #388e3c;
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.12);
         }
 
-        footer {
-            text-align: center;
-            padding: 10px 0;
-            background-color: #333;
-            color: white;
-            position: relative;
-            bottom: 0;
-            width: 100%;
-            margin-top: auto; /* Esto empuja el footer al final del contenedor flex */
-        }
-
-        h1 {
-            text-align: center;
-            color: #080808;
-        }
-
-        .historial-dia {
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #f8f9fa;
-        }
-
-        .historial-dia h2 {
-            color: #007bff;
-        }
-
-        .pedido {
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #ffffff;
-        }
-
-        .pedido h3 {
-            color: #007bff;
-        }
-
-        .pedido p {
-            margin: 5px 0;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
+        .logo-right {
+            width: 70px;
+            height: auto;
+            margin-left: 10px;
         }
 
         .content {
             flex: 1;
-            padding: 20px;
+            padding: 32px 8px 24px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        
-        /* Estilos para el filtro por fecha */
-.filters {
-    text-align: center;
-    margin-bottom: 20px;
-}
 
-.filters input[type="date"] {
-    padding: 10px 15px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-}
+        h1 {
+            text-align: center;
+            color: #388e3c;
+            margin-bottom: 32px;
+            font-size: 2.1rem;
+            font-weight: 700;
+        }
 
-.filters button {
-    padding: 10px 20px;
-    background-color: #0a0a0a;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s, transform 0.3s;
-}
+        .filters {
+            text-align: center;
+            margin-bottom: 24px;
+        }
 
-.filters button:hover {
-    background-color: #1c7905;
-    transform: scale(1.05);
-}
+        .filters input[type="date"] {
+            padding: 10px 15px;
+            margin-right: 10px;
+            border: 1.5px solid #4CAF50;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f8fafc;
+        }
+
+        .filters button {
+            padding: 10px 22px;
+            background: linear-gradient(90deg, #4CAF50 60%, #388e3c 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.10);
+        }
+
+        .filters button:hover {
+            background: linear-gradient(90deg, #388e3c 60%, #4CAF50 100%);
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.18);
+        }
+
+        .historial-grid {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .historial-dia {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px 0 rgba(60, 60, 60, 0.10);
+            padding: 24px 18px 18px 18px;
+        }
+
+        .historial-dia h2 {
+            color: #388e3c;
+            margin-bottom: 18px;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .pedido {
+            background: #f8fafc;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px 0 rgba(60, 60, 60, 0.06);
+            padding: 16px 14px 14px 14px;
+            margin-bottom: 16px;
+            border: 1.5px solid #e0e0e0;
+        }
+
+        .pedido h3 {
+            color: #388e3c;
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .pedido p {
+            margin: 4px 0;
+            color: #444;
+            font-size: 1rem;
+        }
+
+        .total {
+            color: #388e3c;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .footer-img {
+            width: 100%;
+            max-width: 1300px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 0;
+            background-color: #333;
+            color: white;
+            margin-top: auto;
+            width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            .historial-grid {
+                max-width: 99vw;
+            }
+
+            .logo {
+                width: 120px;
+            }
+
+            .logo-right {
+                width: 40px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                padding: 10px 8px;
+            }
+
+            .logo {
+                width: 90px;
+                margin-bottom: 8px;
+            }
+
+            .logo-right {
+                width: 30px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .content {
+                padding: 12px 2px 12px 2px;
+            }
+
+            .historial-grid {
+                max-width: 99vw;
+            }
+
+            .historial-dia {
+                padding: 12px 4px 10px 4px;
+            }
+
+            .pedido {
+                padding: 10px 4px 8px 4px;
+            }
+        }
     </style>
 </head>
-
 <body>
     <header>
         <div class="logo-container">
@@ -173,89 +260,223 @@
                 <li><a href="historial.html">Historial</a></li>
             </ul>
         </nav>
-        <img src="uni.jpeg" alt="Logo" class="logo" width="45"
-        height="100"/>
+        <img src="uni.jpeg" alt="Logo" class="logo-right"/>
     </header>
 
     <div class="content">
         <h1>Historial de Pedidos</h1>
-
-        
-
         <div class="filters">
             <input type="date" id="fecha">
-            <button onclick="filterByDate()">Filtrar por Fecha</button>
+            <button onclick="filterByDate()"><i class="fa fa-filter"></i> Filtrar por Fecha</button>
         </div>
-
-        <!-- Historial clasificado por día -->
-        <div id="historial">
-            <div class="historial-dia" data-fecha="2024-06-25">
+        <div class="historial-grid" id="historial">
+            <!-- Aquí se mostrarán los pedidos agrupados por día -->
+            <!-- Ejemplo de estructura:
+            <div class="historial-dia">
                 <h2>Pedidos del 25 de junio de 2024</h2>
                 <div class="pedido">
                     <h3>Pedido #MGYONG</h3>
-                    <p><strong>Cliente:</strong> Nancy Montoya</p>
                     <p><strong>Usuario:</strong> Estudiante</p>
                     <p><strong>Fecha:</strong> 2024-06-25</p>
                     <p><strong>Ítems:</strong> Hamburguesa de pollo (2), Coca-cola 600ml (1), Gomitas pandita (1)</p>
-                    <p><strong>Total:</strong> $140.00</p>
+                    <p><strong>Total:</strong> <span class="total">$140.00</span></p>
                     <p><strong>Pago:</strong> Efectivo</p>
                 </div>
-
-                <div class="pedido">
-                    <h3>Pedido #OMXSQR</h3>
-                    <p><strong>Cliente:</strong> Zacarias Lesso</p>
-                    <p><strong>Usuario:</strong> Maestro</p>
-                    <p><strong>Fecha:</strong> 2024-06-25</p>
-                    <p><strong>Ítems:</strong> Cafe Vainilla (1), Burrito Discada (1)</p>
-                    <p><strong>Total:</strong> $75.00</p>
-                    <p><strong>Pago:</strong> Transferencia</p>
-                </div>
-            
-        </div>
-
-     
-        <div class="historial-dia" data-fecha="2024-06-24">
-            <h2>Pedidos del 24 de junio de 2024</h2>
-            
-            <div class="pedido">
-                <h3>Pedido #ABCDOP</h3>
-                <p><strong>Cliente:</strong> Kenia Olivas</p>
-                <p><strong>Usuario:</strong> Estudiante</p>
-                <p><strong>Fecha:</strong> 2024-06-24</p>
-                <p><strong>Ítems:</strong> Pizza (1), Jugo de Naranja (1)</p>
-                <p><strong>Total:</strong> $90.00</p>
-                <p><strong>Pago:</strong> Efectivo</p>
             </div>
-
-            <div class="pedido">
-                <h3>Pedido #OYNVNH</h3>
-                <p><strong>Cliente:</strong> Karina Sanchez</p>
-                <p><strong>Usuario:</strong> Estudiante</p>
-                <p><strong>Fecha:</strong> 2024-06-25</p>
-                <p><strong>Ítems:</strong> Sprite 600ml (1), Ensalada (1)</p>
-                <p><strong>Total:</strong> $80.00</p>
-                <p><strong>Pago:</strong> Transferencia</p>
-            </div>
-
-        <div class="historial-dia" data-fecha="2024-06-23">
-                <h2>Pedidos del 23 de junio de 2024</h2>
-
-            <div class="pedido">
-                <h3>Pedido #EFGHUI</h3>
-        <p><strong>Cliente:</strong> Alejandro Solis</p>
-        <p><strong>Usuario:</strong> Maestro</p>
-        <p><strong>Fecha:</strong> 2024-06-23</p>
-        <p><strong>Ítems:</strong> Boneless (1), Agua Mineral (1)</p>
-        <p><strong>Total:</strong> $85.00</p>
-        <p><strong>Pago:</strong> Transferencia</p>
-            </div>
+            -->
         </div>
     </div>
 
     <footer>
-        <img src="piepagina.jpeg"
-        width="1300"
-  height="100"/>
+        <img src="piepagina.jpeg" class="footer-img" alt="Pie de página"/>
     </footer>
+
+    <!-- Si usas Firebase y quieres mostrar el historial dinámicamente, agrega este script -->
+    <!--
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script>
+        // Configuración de Firebase (ajusta si es necesario)
+        const firebaseConfig = { ... };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // Función para agrupar pedidos por fecha
+        function agruparPorFecha(pedidos) {
+            const grupos = {};
+            pedidos.forEach(doc => {
+                const pedido = doc.data();
+                let fecha = pedido.fecha && pedido.fecha.toDate ? pedido.fecha.toDate() : new Date();
+                const fechaStr = fecha.toLocaleDateString();
+                if (!grupos[fechaStr]) grupos[fechaStr] = [];
+                grupos[fechaStr].push(pedido);
+            });
+            return grupos;
+        }
+
+        // Renderizar historial
+        db.collection('pedidos').orderBy('fecha', 'desc').onSnapshot(snapshot => {
+            const historial = document.getElementById('historial');
+            historial.innerHTML = '';
+            const grupos = agruparPorFecha(snapshot.docs);
+            Object.keys(grupos).sort((a, b) => new Date(b) - new Date(a)).forEach(fecha => {
+                let html = `<div class="historial-dia"><h2>Pedidos del ${fecha}</h2>`;
+                grupos[fecha].forEach(pedido => {
+                    html += `
+                        <div class="pedido">
+                            <h3>Pedido #${pedido.numeroPedido || ''}</h3>
+                            <p><strong>Usuario:</strong> ${pedido.usuario || ''}</p>
+                            <p><strong>Fecha:</strong> ${fecha}</p>
+                            <p><strong>Ítems:</strong> ${pedido.descripcion || ''}</p>
+                            <p><strong>Total:</strong> <span class="total">$${pedido.total ? pedido.total.toFixed(2) : '0.00'}</span></p>
+                            <p><strong>Pago:</strong> ${pedido.metodoPago || ''}</p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                historial.innerHTML += html;
+            });
+        });
+
+        // Filtro por fecha
+        function filterByDate() {
+            const fecha = document.getElementById('fecha').value;
+            if (!fecha) return;
+            db.collection('pedidos').orderBy('fecha', 'desc').get().then(snapshot => {
+                const historial = document.getElementById('historial');
+                historial.innerHTML = '';
+                const grupos = agruparPorFecha(snapshot.docs);
+                if (grupos[fecha]) {
+                    let html = `<div class="historial-dia"><h2>Pedidos del ${fecha}</h2>`;
+                    grupos[fecha].forEach(pedido => {
+                        html += `
+                            <div class="pedido">
+                                <h3>Pedido #${pedido.numeroPedido || ''}</h3>
+                                <p><strong>Usuario:</strong> ${pedido.usuario || ''}</p>
+                                <p><strong>Fecha:</strong> ${fecha}</p>
+                                <p><strong>Ítems:</strong> ${pedido.descripcion || ''}</p>
+                                <p><strong>Total:</strong> <span class="total">$${pedido.total ? pedido.total.toFixed(2) : '0.00'}</span></p>
+                                <p><strong>Pago:</strong> ${pedido.metodoPago || ''}</p>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    historial.innerHTML = html;
+                } else {
+                    historial.innerHTML = `<div class="historial-dia"><h2>No hay pedidos para esta fecha.</h2></div>`;
+                }
+            });
+        }
+    </script>
+    -->
+
+    <!-- Agrega este script ANTES del cierre de </body> para mostrar solo pedidos entregados -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script>
+        // Configuración de Firebase (ajusta si es necesario)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDk8V1gmkMYQkvMfyHluRLRm-z6AcWapf4",
+            authDomain: "torocafe-78491.firebaseapp.com",
+            projectId: "torocafe-78491",
+            storageBucket: "torocafe-78491.appspot.com",
+            messagingSenderId: "277196893553",
+            appId: "1:277196893553:web:3dc51a57e8b6a940251ad0",
+            measurementId: "G-J69K463VYJ"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // Agrupa pedidos por fecha
+        function agruparPorFecha(pedidos) {
+            const grupos = {};
+            pedidos.forEach(doc => {
+                const pedido = doc.data();
+                let fecha = pedido.fecha && pedido.fecha.toDate ? pedido.fecha.toDate() : new Date();
+                const fechaStr = fecha.toLocaleDateString();
+                if (!grupos[fechaStr]) grupos[fechaStr] = [];
+                grupos[fechaStr].push(pedido);
+            });
+            return grupos;
+        }
+
+        // Renderiza solo pedidos entregados
+        db.collection('pedidos')
+          .where('estado', '==', 'entregado')
+          .orderBy('fecha', 'desc')
+          .onSnapshot(snapshot => {
+            const historial = document.getElementById('historial');
+            historial.innerHTML = '';
+            snapshot.docs.forEach(doc => {
+                const pedido = doc.data();
+                const id = doc.id;
+                const fecha = pedido.fecha && pedido.fecha.toDate ? pedido.fecha.toDate() : new Date();
+                const fechaStr = fecha.toLocaleDateString() + ' ' + fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const colorEstado = '#43a047';
+                const colorTexto = '#fff';
+
+                // Lista de productos
+                let carritoHtml = '';
+                if (Array.isArray(pedido.carrito)) {
+                    carritoHtml = '<ul style="margin:6px 0 0 0; padding-left:18px;">' +
+                        pedido.carrito.map(item =>
+                            `<li>${item.nombre || item.title || 'Producto'} (${item.cantidad || item.qty || 1}) - $${item.precio ? item.precio.toFixed(2) : '0.00'}</li>`
+                        ).join('') +
+                        '</ul>';
+                }
+
+                historial.innerHTML += `
+                    <div class="pedido" data-id="${id}" style="border:1px solid #ccc; border-radius:8px; padding:12px; margin-bottom:12px; background:#f8fafc;">
+                        <h3>Pedido #${pedido.numeroPedido || id}</h3>
+                        <p><strong>Usuario:</strong> ${pedido.usuario || '---'}</p>
+                        <p><strong>Fecha:</strong> ${fechaStr}</p>
+                        <p><strong>Estado:</strong> 
+                            <span class="estado-pendiente" style="padding:4px 8px; border-radius:5px; background:${colorEstado};color:${colorTexto};">
+                                Entregado
+                            </span>
+                        </p>
+                        <p><strong>Total:</strong> $${pedido.total ? pedido.total.toFixed(2) : '0.00'}</p>
+                        <p><strong>Método de pago:</strong> ${pedido.metodoPago || '---'}</p>
+                        <p><strong>Descripción:</strong> ${pedido.descripcion || '---'}</p>
+                        <p><strong>Carrito:</strong> ${carritoHtml}</p>
+                    </div>
+                `;
+            });
+        });
+
+        // Filtro por fecha solo para entregados
+        function filterByDate() {
+            const fecha = document.getElementById('fecha').value;
+            if (!fecha) return;
+            db.collection('pedidos').where('estado', '==', 'entregado').orderBy('fecha', 'desc').get().then(snapshot => {
+                const historial = document.getElementById('historial');
+                historial.innerHTML = '';
+                const grupos = agruparPorFecha(snapshot.docs);
+                if (grupos[fecha]) {
+                    let html = `<div class="historial-dia"><h2>Pedidos del ${fecha}</h2>`;
+                    grupos[fecha].forEach(pedido => {
+                        html += `
+                            <div class="pedido">
+                                <h3>Pedido #${pedido.numeroPedido || ''}</h3>
+                                <p><strong>Usuario:</strong> ${pedido.usuario || ''}</p>
+                                <p><strong>Fecha:</strong> ${fecha}</p>
+                                <p><strong>Ítems:</strong> ${pedido.descripcion || ''}</p>
+                                <p><strong>Total:</strong> <span class="total">$${pedido.total ? pedido.total.toFixed(2) : '0.00'}</span></p>
+                                <p><strong>Pago:</strong> ${pedido.metodoPago || ''}</p>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    historial.innerHTML = html;
+                } else {
+                    historial.innerHTML = `<div class="historial-dia"><h2>No hay pedidos para esta fecha.</h2></div>`;
+                }
+            });
+        }
+    </script>
 </body>
 </html>
